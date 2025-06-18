@@ -362,6 +362,12 @@ def clean_word(word: str) -> str:
 # Precompiled regex for removing punctuation across the codebase
 _NORMALIZE_RE = re.compile(r"[-‐'.,/ ]+")
 
+# IPA characters commonly found in pronunciation markers
+IPA_CHARS = set("ɐəɪɛɜːʃɹɔɑɒæʌʔɪɘɯɤɞɨʊʉɛɔɵɶœøɪəɛ̃ɔ̃ɑ̃")
+
+# Precompiled regex for simple phonetic patterns
+PRONUNCIATION_SIMPLE_RE = re.compile(r"/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/")
+
 
 def normalize_word(word: str) -> str:
     """Return word with common punctuation removed."""
@@ -373,10 +379,10 @@ def has_pronunciation_markers(line: str) -> bool:
     if '/' not in line:
         return False
     # Check for IPA characters
-    if any(char in line for char in 'ɐəɪɛɜːʃɹɔɑɒæʌʔɪɘɯɤɞɨʊʉɛɔɵɶœøɪəɛ̃ɔ̃ɑ̃'):
+    if any(char in line for char in IPA_CHARS):
         return True
     # Check for simple phonetic patterns like /ad/, /abkazi/
-    if re.search(r'/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/', line):
+    if PRONUNCIATION_SIMPLE_RE.search(line):
         return True
     return False
 
