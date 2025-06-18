@@ -650,7 +650,7 @@ def detect_target_language_script(lines: List[str], sample_size: int = 500) -> s
     return 'latin'
 
 
-def extract_words_by_script_detection(lines: List[str], 
+def extract_words_by_script_detection(lines: Iterable[str],
                                      extract_language: str,
                                      target_script: str) -> List[str]:
     """
@@ -973,21 +973,21 @@ def extract_multiline_format_words(lines: List[str], extract_language: str) -> L
     return words
 
 
-def extract_words_from_gzip_content(content: bytes, 
+def extract_words_from_gzip_content(lines_iter: Iterable[str],
                                    extract_language: str = "source",
                                    is_dz_file: bool = False) -> List[str]:
     """
     Extract words from gzipped dictionary content using intelligent pattern detection.
     
     Args:
-        content: Raw gzipped content
+        lines_iter: Iterable yielding lines from the gzipped dictionary
         extract_language: Either "source" or "target"
         is_dz_file: True if this is a .dz file (different pattern logic)
         
     Returns:
         List of extracted words
     """
-    lines = content.decode('utf-8', errors='ignore').splitlines()
+    lines = [line.rstrip('\n') for line in lines_iter]
     
     # Detect the target language script
     target_script = detect_target_language_script(lines)
@@ -1023,40 +1023,34 @@ def extract_words_from_gzip_content(content: bytes,
     return words
 
 
-def _extract_simple_format_words(lines: List[str], 
+def _extract_simple_format_words(lines: Iterable[str],
                                 extract_language: str) -> List[str]:
     """Extract words from simple headword/translation format."""
     words = []
-    i = 0
-    
-    while i < len(lines):
-        line = lines[i].strip()
-        
+    iterator = iter(lines)
+
+    for line in iterator:
+        line = line.strip()
+
         # Skip headers and empty lines
         if not line or is_header_line(line):
-            i += 1
             continue
-        
-        # Process headword/translation pair
-        if i + 1 < len(lines):
-            next_line = lines[i + 1].strip()
-            
-            if extract_language == "source":
-                # Extract headword - more permissive validation for Kurdish and other languages
-                clean_line = clean_word(line)
-                if (clean_line and len(clean_line) >= 1
-                    and not any(char.isdigit() for char in clean_line)
-                    and not any(char in clean_line for char in ['(', ')', '[', ']', '<', '>', '/', '\\'])
-                    and should_include_word_by_pos(line, POS_FILTERS)):
-                    words.append(clean_line)
-            else:
-                # Extract translation words
-                if next_line:
-                    words.extend(extract_simple_translation_words(next_line))
-            
-            i += 2  # Skip both lines
+
+        next_line = next(iterator, '').strip()
+
+        if extract_language == "source":
+            clean_line = clean_word(line)
+            if (clean_line and len(clean_line) >= 1
+                and not any(char.isdigit() for char in clean_line)
+                and not any(char in clean_line for char in ['(', ')', '[', ']', '<', '>', '/', '\\'])
+                and should_include_word_by_pos(line, POS_FILTERS)):
+                words.append(clean_line)
         else:
-            i += 1
+            if next_line:
+                words.extend(extract_simple_translation_words(next_line))
+
+        # already consumed next_line via iterator
+        # No else branch; iterator naturally advances
     
     return words
 
@@ -1296,22 +1290,25 @@ def extract_words_from_stardict(stardict_dir: str,
     return words, recovered_count
 
 
-def extract_words_from_tei_xml(xml_content: str, 
+def extract_words_from_tei_xml(xml_source: str,
                               extract_language: str = "target") -> List[str]:
-    """
-    Extract words from TEI XML format.
-    
+    """Extract words from TEI XML format.
+
     Args:
-        xml_content: TEI XML content as string
+        xml_source: Path to TEI XML file or XML content string
         extract_language: Either "source" or "target"
-        
+
     Returns:
         List of extracted words
     """
     words = []
-    
+
     try:
-        root = ET.fromstring(xml_content)
+        if os.path.exists(xml_source):
+            tree = ET.parse(xml_source)
+            root = tree.getroot()
+        else:
+            root = ET.fromstring(xml_source)
         
         for entry in root.iter():
             if not (entry.tag.endswith('}entry') or entry.tag == 'entry'):
@@ -1443,21 +1440,16 @@ def process_dictionary_file(file_path: str,
     stardict_recovery = 0
     
     if file_path.endswith('.dict.dz'):
-        # Process gzipped dictionary
-        with gzip.open(file_path, 'rb') as f:
-            content = f.read()
-        
-        # Pass is_dz_file=True for .dz files to handle their inverted pattern logic
-        source_words = extract_words_from_gzip_content(content, "source", is_dz_file=True)
-        target_words = extract_words_from_gzip_content(content, "target", is_dz_file=True)
+        # Process gzipped dictionary in streaming mode
+        with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
+            source_words = extract_words_from_gzip_content(f, "source", is_dz_file=True)
+        with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
+            target_words = extract_words_from_gzip_content(f, "target", is_dz_file=True)
     
     elif file_path.endswith('.tei'):
         # Process TEI XML format
-        with open(file_path, 'r', encoding='utf-8') as f:
-            xml_content = f.read()
-        
-        source_words = extract_words_from_tei_xml(xml_content, "source")
-        target_words = extract_words_from_tei_xml(xml_content, "target")
+        source_words = extract_words_from_tei_xml(file_path, "source")
+        target_words = extract_words_from_tei_xml(file_path, "target")
     
     elif os.path.isdir(file_path):
         # Process StarDict format directory and receive recovery info
