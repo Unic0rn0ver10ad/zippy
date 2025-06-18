@@ -1,0 +1,11 @@
+# Ignore generated wordlist files
+wordlists/*
+!wordlists/.gitkeep
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# macOS and other system files
+.DS_Store
+
