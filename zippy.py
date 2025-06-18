@@ -126,6 +126,15 @@ LANGUAGE_MAPPINGS = {
     'swh': 'swahili',
 }
 
+# Basic English stopwords used when filtering extracted words
+ENGLISH_STOPWORDS: Set[str] = {
+    'the', 'and', 'of', 'or', 'in', 'to', 'for', 'with',
+    'from', 'by', 'at', 'on', 'an', 'as', 'be', 'is',
+    'are', 'was', 'were', 'been', 'have', 'has', 'had',
+    'will', 'would', 'could', 'should', 'may', 'might',
+    'can', 'must'
+}
+
 def get_language_mapping(name_or_code: str) -> Tuple[str, str]:
     """
     Given either a filename (e.g. 'freedict-eng-ces-0.1.3.dictd.tar.xz')
@@ -947,14 +956,7 @@ def extract_multiline_format_words(lines: List[str], extract_language: str) -> L
                         and len(clean) >= 3
                         and normalize_word(clean).isalpha()
                         and all(ord(char) < 256 for char in clean)
-                        and clean.lower()
-                        not in [
-                            'the', 'and', 'of', 'or', 'in', 'to', 'for', 'with',
-                            'from', 'by', 'at', 'on', 'an', 'as', 'be', 'is',
-                            'are', 'was', 'were', 'been', 'have', 'has', 'had',
-                            'will', 'would', 'could', 'should', 'may', 'might',
-                            'can', 'must'
-                        ]
+                        and clean.lower() not in ENGLISH_STOPWORDS
                     )
                 )
             
