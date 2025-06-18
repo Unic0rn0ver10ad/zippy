@@ -359,6 +359,15 @@ def clean_word(word: str) -> str:
     return word.strip(string.punctuation)
 
 
+# Precompiled regex for removing punctuation across the codebase
+_NORMALIZE_RE = re.compile(r"[-‐'.,/ ]+")
+
+
+def normalize_word(word: str) -> str:
+    """Return word with common punctuation removed."""
+    return _NORMALIZE_RE.sub('', word)
+
+
 def has_pronunciation_markers(line: str) -> bool:
     """Check if a line contains pronunciation markers."""
     if '/' not in line:
@@ -382,8 +391,8 @@ def extract_pronunciation_word(line: str) -> Optional[str]:
         return None
     
     # Clean and validate - handle Unicode characters like em-dash
-    clean = word.replace('-', '').replace('‐', '').replace("'", '').replace('.', '').replace(' ', '')
-    if len(clean) >= 2 and clean.replace('-', '').replace('‐', '').isalpha() and not any(char.isdigit() for char in word):
+    clean = normalize_word(word)
+    if len(clean) >= 2 and clean.isalpha() and not any(char.isdigit() for char in word):
         return word
     
     return None
@@ -660,8 +669,8 @@ def extract_words_by_script_detection(lines: List[str],
                 if word and is_valid_word(word):
                     words.append(word)
             # Also check for simple headwords without pronunciation
-            elif (line.replace('-', '').replace("'", '').isalpha() and 
-                  len(line) >= 2 and 
+            elif (normalize_word(line).isalpha() and
+                  len(line) >= 2 and
                   all(ord(char) < 256 for char in line) and
                   not any(0x0600 <= ord(char) <= 0x06FF for char in line)):  # Not Arabic
                 words.append(line)
@@ -724,7 +733,7 @@ def extract_words_by_script_detection(lines: List[str],
             else:  # Latin script fallback
                 # Extract non-pronunciation Latin words
                 if (not ('/' in line and any(char in line for char in 'ˈˌɑɛɪəɹθð')) and
-                    line.replace('-', '').replace("'", '').isalpha()):
+                    normalize_word(line).isalpha()):
                     words.append(line)
     
     return words
@@ -755,8 +764,8 @@ def detect_alternating_pattern(lines: List[str]) -> str:
             has_pronunciation_1 = has_pronunciation_markers(line1)
             has_pronunciation_2 = has_pronunciation_markers(line2)
             
-            is_latin_1 = line1.replace('-', '').replace('.', '').replace(',', '').replace('/', '').replace(' ', '').isalpha()
-            is_latin_2 = line2.replace('-', '').replace('.', '').replace(',', '').replace('/', '').replace(' ', '').isalpha()
+            is_latin_1 = normalize_word(line1).isalpha()
+            is_latin_2 = normalize_word(line2).isalpha()
             
             if has_pronunciation_1 and is_latin_2 and not has_pronunciation_2:
                 pattern_samples.append('source-target')
@@ -857,15 +866,15 @@ def extract_words_with_pattern_detection(lines: List[str],
                     continue
                 cleaned_line = line2.replace(',', ' ').replace(';', ' ')
                 words.extend(
-                    clean
-                    for word in cleaned_line.split()
-                    for clean in [clean_word(word)]
-                    if (
                         clean
-                        and len(clean) >= 2
-                        and clean.replace('-', '').isalpha()
-                        and all(ord(char) < 256 for char in clean)
-                    )
+                        for word in cleaned_line.split()
+                        for clean in [clean_word(word)]
+                        if (
+                            clean
+                            and len(clean) >= 2
+                            and normalize_word(clean).isalpha()
+                            and all(ord(char) < 256 for char in clean)
+                        )
                 )
         
         elif pattern == 'target-source':
@@ -888,7 +897,7 @@ def extract_words_with_pattern_detection(lines: List[str],
                     if (
                         clean
                         and len(clean) >= 2
-                        and clean.replace('-', '').isalpha()
+                        and normalize_word(clean).isalpha()
                         and all(ord(char) < 256 for char in clean)
                     )
                 )
@@ -936,7 +945,7 @@ def extract_multiline_format_words(lines: List[str], extract_language: str) -> L
                     if (
                         clean
                         and len(clean) >= 3
-                        and clean.replace('-', '').isalpha()
+                        and normalize_word(clean).isalpha()
                         and all(ord(char) < 256 for char in clean)
                         and clean.lower()
                         not in [
@@ -1061,7 +1070,7 @@ def _extract_with_header_skip(lines: List[str],
             continue
             
         # Look for start of dictionary entries - single words followed by translations
-        if (len(line) <= 30 and line.replace('-', '').replace("'", '') and
+        if (len(line) <= 30 and normalize_word(line) and
             not any(marker in line for marker in ['/', '<', '>', '*', '(', ')']) and
             i + 1 < len(lines)):
             
