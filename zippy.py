@@ -66,14 +66,23 @@ HEADER_PATTERNS = {
         'Published', 'ID#', 'Series:', 'Changelog:', '*', 'Notes:',
         'Source(s):', 'Database Status:', 'The Project:'
     ),
-    'keywords': [
-        'freedict', 'dictionary', 'license', 'copyright', 
+    'keywords': {
+        'freedict', 'dictionary', 'license', 'copyright',
         'available', 'foundation', 'version', 'ver.', 'converted',
         'imported', 'makefile', 'initial', 'michael bunk',
         'piotr bański', 'conversion of tei', 'tools/xsl',
         'manual clean-up', 'stable'
-    ]
+    }
 }
+
+# Precompiled year detection pattern
+YEAR_PATTERN = re.compile(r"20(?:05|10|18|19|20|21|22|23|24)")
+
+
+def contains_year(line: str) -> bool:
+    """Return True if line contains a known year pattern."""
+    return bool(YEAR_PATTERN.search(line))
+
 
 # POS filtering configuration
 POS_FILTERS = {
@@ -336,12 +345,12 @@ def contains_cjk(text: str) -> bool:
 def is_header_line(line: str) -> bool:
     """Check if a line is part of the dictionary header."""
     line_lower = line.lower()
-    
+
     # Check for prefix patterns
     if line.startswith(HEADER_PATTERNS['prefixes']):
         return True
-    
-    # Check for keyword patterns
+
+    # Check for keyword patterns using the pre-built set
     return any(keyword in line_lower for keyword in HEADER_PATTERNS['keywords'])
 
 
@@ -492,7 +501,7 @@ def detect_simple_format(lines: List[str]) -> bool:
             continue
             
         # Skip lines that contain years (changelog entries)
-        if any(year in line for year in ['2005', '2010', '2018', '2019', '2020', '2021', '2022', '2023', '2024']):
+        if contains_year(line):
             continue
             
         # Skip long text blocks that are likely header content
@@ -1046,8 +1055,8 @@ def _extract_with_header_skip(lines: List[str],
         line = lines[i].strip()
         
         # Skip obvious header lines
-        if (not line or is_header_line(line) or 
-            any(year in line for year in ['2005', '2010', '2018', '2019', '2020', '2021', '2022', '2023', '2024']) or
+        if (not line or is_header_line(line) or
+            contains_year(line) or
             len(line) > 50 or ':' in line):
             continue
             
