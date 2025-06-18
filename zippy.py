@@ -349,6 +349,19 @@ def clean_word(word: str) -> str:
     return word.strip(string.punctuation)
 
 
+def has_pronunciation_markers(line: str) -> bool:
+    """Check if a line contains pronunciation markers."""
+    if '/' not in line:
+        return False
+    # Check for IPA characters
+    if any(char in line for char in 'ɐəɪɛɜːʃɹɔɑɒæʌʔɪɘɯɤɞɨʊʉɛɔɵɶœøɪəɛ̃ɔ̃ɑ̃'):
+        return True
+    # Check for simple phonetic patterns like /ad/, /abkazi/
+    if re.search(r'/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/', line):
+        return True
+    return False
+
+
 def extract_pronunciation_word(line: str) -> Optional[str]:
     """Extract headword from pronunciation format line (word /pronunciation/ <pos>)."""
     if '/' not in line:
@@ -665,7 +678,6 @@ def extract_words_by_script_detection(lines: List[str],
             elif target_script == 'cjk':
                 if contains_cjk(line):
                     # Extract CJK words - preserve whole words, not individual characters
-                    import re
                     parts = re.split(r'[,，、。；;]+|\s+', line.strip())
                     words.extend(
                         clean
@@ -719,18 +731,6 @@ def detect_alternating_pattern(lines: List[str]) -> str:
             not any(header in line2 for header in ['00-database', 'Author:', 'Size:'])):
             
             # Enhanced pronunciation detection for various phonetic notation systems
-            def has_pronunciation_markers(line):
-                if '/' not in line:
-                    return False
-                # Check for IPA characters
-                if any(char in line for char in 'ɐəɪɛɜːʃɹɔɑɒæʌʔɪɘɯɤɞɨʊʉɛɔɵɶœøɪəɛ̃ɔ̃ɑ̃'):
-                    return True
-                # Check for simple phonetic patterns like /ad/, /abkazi/
-                import re
-                if re.search(r'/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/', line):
-                    return True
-                return False
-            
             has_pronunciation_1 = has_pronunciation_markers(line1)
             has_pronunciation_2 = has_pronunciation_markers(line2)
             
@@ -819,18 +819,6 @@ def extract_words_with_pattern_detection(lines: List[str],
             continue
         
         # Enhanced pronunciation detection for various phonetic notation systems
-        def has_pronunciation_markers(line):
-            if '/' not in line:
-                return False
-            # Check for IPA characters
-            if any(char in line for char in 'ɐəɪɛɜːʃɹɔɑɒæʌʔɪɘɯɤɞɨʊʉɛɔɵɶœøɪəɛ̃ɔ̃ɑ̃'):
-                return True
-            # Check for simple phonetic patterns like /ad/, /abkazi/
-            import re
-            if re.search(r'/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/', line):
-                return True
-            return False
-        
         has_pronunciation_1 = has_pronunciation_markers(line1)
         has_pronunciation_2 = has_pronunciation_markers(line2)
         
