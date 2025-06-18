@@ -371,11 +371,18 @@ def clean_word(word: str) -> str:
 # Precompiled regex for removing punctuation across the codebase
 _NORMALIZE_RE = re.compile(r"[-‐'.,/ ]+")
 
-# IPA characters commonly found in pronunciation markers
-IPA_CHARS = set("ɐəɪɛɜːʃɹɔɑɒæʌʔɪɘɯɤɞɨʊʉɛɔɵɶœøɪəɛ̃ɔ̃ɑ̃")
+# Regex to detect IPA characters or markers used in multiple functions
+_IPA_MARKER_RE = re.compile(
+    r"[ɐəɪɛɜːʃɹɔɑɒæʌʔɘɯɤɞɨʊʉɵɶœøɛ̃ɔ̃ɑ̃ˈˌ]"
+)
 
-# Precompiled regex for simple phonetic patterns
-PRONUNCIATION_SIMPLE_RE = re.compile(r"/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/")
+# Translation table for common punctuation replacements
+_TRANSLATE_MAP = str.maketrans({
+    ',': ' ',
+    '،': ' ',  # Arabic comma
+    '、': ' ',  # CJK comma
+    '~': ' ',
+})
 
 
 def normalize_word(word: str) -> str:
@@ -388,7 +395,7 @@ def has_pronunciation_markers(line: str) -> bool:
     if '/' not in line:
         return False
     # Check for IPA characters
-    if any(char in line for char in IPA_CHARS):
+    if _IPA_MARKER_RE.search(line):
         return True
     # Check for simple phonetic patterns like /ad/, /abkazi/
     if PRONUNCIATION_SIMPLE_RE.search(line):
@@ -415,7 +422,7 @@ def extract_pronunciation_word(line: str) -> Optional[str]:
 
 def extract_simple_translation_words(translation: str) -> Iterable[str]:
     """Yield words from simple translation text."""
-    parts = translation.replace(',', ' ').replace('،', ' ')  # Arabic comma
+    parts = translation.translate(_TRANSLATE_MAP)
 
     for word in parts.split():
         clean = clean_word(word)
@@ -425,17 +432,7 @@ def extract_simple_translation_words(translation: str) -> Iterable[str]:
 
 def extract_script_specific_words(translation: str, script: str) -> Iterable[str]:
     """Yield words from translation text for specific scripts."""
-
-    # Handle script-specific separators
-    separators = {
-        'cjk_hiragana': ('、', ' '),
-        'cjk_katakana': ('、', ' '),
-        'cjk_unified': ('、', ' '),
-        'arabic': ('،', ' '),
-    }
-
-    sep1, sep2 = separators.get(script, (',', ' '))
-    parts = translation.replace(sep1, sep2).replace(',', ' ')
+    parts = translation.translate(_TRANSLATE_MAP)
 
     for word in parts.split():
         clean = clean_word(word)
@@ -449,7 +446,7 @@ def extract_script_specific_words(translation: str, script: str) -> Iterable[str
 
 def extract_english_words(translation: str) -> Iterable[str]:
     """Yield English words from translation text."""
-    parts = translation.replace(',', ' ')
+    parts = translation.translate(_TRANSLATE_MAP)
 
     for word in parts.split():
         clean = clean_word(word)
@@ -464,34 +461,32 @@ def process_multilingual_translation(translation: str) -> Iterable[str]:
     # Skip quoted translations
     if translation.startswith('"') and translation.endswith('"'):
         return []
+    cleaned = translation.translate(_TRANSLATE_MAP)
 
     # Detect and extract based on script
-    if contains_script(translation, 'devanagari'):
-        # Handle special formatting for Hindi
-        if not translation.startswith('"'):
-            parts = translation.replace('~', ' ').replace(',', ' ')
-            for word in parts.split():
-                clean = clean_word(word)
-                if (
-                    len(clean) >= 1
-                    and all(is_script_character(char, 'devanagari') for char in clean)
-                ):
-                    yield clean
+    if contains_script(cleaned, 'devanagari'):
+        for word in cleaned.split():
+            clean = clean_word(word)
+            if (
+                len(clean) >= 1
+                and all(is_script_character(char, 'devanagari') for char in clean)
+            ):
+                yield clean
 
-    elif contains_script(translation, 'arabic'):
+    elif contains_script(cleaned, 'arabic'):
         # Skip pronunciation guides
-        if '/' in translation and any(char in translation for char in 'ɐəɪəɹˈˌ'):
+        if '/' in translation and _IPA_MARKER_RE.search(translation):
             return []
-        yield from extract_script_specific_words(translation, 'arabic')
+        yield from extract_script_specific_words(cleaned, 'arabic')
 
-    elif contains_cjk(translation):
-        yield from extract_script_specific_words(translation, 'cjk_hiragana')
+    elif contains_cjk(cleaned):
+        yield from extract_script_specific_words(cleaned, 'cjk_hiragana')
 
-    elif contains_script(translation, 'cyrillic'):
-        yield from extract_script_specific_words(translation, 'cyrillic')
+    elif contains_script(cleaned, 'cyrillic'):
+        yield from extract_script_specific_words(cleaned, 'cyrillic')
 
     else:
-        yield from extract_english_words(translation)
+        yield from extract_english_words(cleaned)
 
 
 def detect_simple_format(lines: List[str]) -> bool:
