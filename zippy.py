@@ -1157,8 +1157,8 @@ def _extract_complex_format_words(lines: List[str],
     return words
 
 
-def extract_words_from_stardict(stardict_dir: str, 
-                               extract_language: str = "source") -> List[str]:
+def extract_words_from_stardict(stardict_dir: str,
+                               extract_language: str = "source") -> Tuple[List[str], int]:
     """
     Extract words from StarDict format directory.
     
@@ -1167,12 +1167,13 @@ def extract_words_from_stardict(stardict_dir: str,
         extract_language: Either "source" or "target"
         
     Returns:
-        List of extracted words
+        Tuple of (extracted words list, count of words recovered from index)
     """
     import struct
     import gzip
     
     words = []
+    recovered_count = 0
     
     try:
         # Find the base name by looking for .ifo file
@@ -1183,13 +1184,13 @@ def extract_words_from_stardict(stardict_dir: str,
                 break
         
         if not base_name:
-            return words
+            return words, recovered_count
         
         idx_file = os.path.join(stardict_dir, base_name + '.idx.gz')
         dict_file = os.path.join(stardict_dir, base_name + '.dict.dz')
         
         if not (os.path.exists(idx_file) and os.path.exists(dict_file)):
-            return words
+            return words, recovered_count
         
         # Read the index file
         with gzip.open(idx_file, 'rb') as f:
@@ -1234,7 +1235,7 @@ def extract_words_from_stardict(stardict_dir: str,
         # For StarDict files with invalid offsets, also extract headwords directly from index
         # This recovers words that have corrupted offset data but valid headwords
         if len(entries) < pos // 12:  # Rough estimate - if we lost too many entries
-            print(f"StarDict offset issues detected, extracting from index directly...")
+            print("StarDict offset issues detected, extracting from index directly...")
             existing_words = {w for w, d in entries}  # Use set for O(1) lookup
             pos = 0
             direct_words = 0
@@ -1264,7 +1265,7 @@ def extract_words_from_stardict(stardict_dir: str,
                 except (UnicodeDecodeError, struct.error):
                     continue
             
-            print(f"Recovered {direct_words} additional words from index")
+            recovered_count = direct_words
         
         # Extract words based on language from successfully parsed entries
         for word, definition in entries:
@@ -1284,7 +1285,7 @@ def extract_words_from_stardict(stardict_dir: str,
     except (OSError, struct.error, UnicodeDecodeError):
         pass
     
-    return words
+    return words, recovered_count
 
 
 def extract_words_from_tei_xml(xml_content: str, 
@@ -1451,28 +1452,9 @@ def process_dictionary_file(file_path: str,
         target_words = extract_words_from_tei_xml(xml_content, "target")
     
     elif os.path.isdir(file_path):
-        # Process StarDict format directory - capture recovery info
-        import sys
-        from io import StringIO
-        
-        # Capture StarDict recovery output
-        old_stdout = sys.stdout
-        sys.stdout = captured_output = StringIO()
-        
-        source_words = extract_words_from_stardict(file_path, "source")
-        target_words = extract_words_from_stardict(file_path, "target")
-        
-        sys.stdout = old_stdout
-        output = captured_output.getvalue()
-        
-        # Extract recovery count from captured output
-        for line in output.split('\n'):
-            if 'Recovered' in line and 'additional words' in line:
-                try:
-                    stardict_recovery = int(line.split()[1])
-                    break
-                except (ValueError, IndexError):
-                    pass
+        # Process StarDict format directory and receive recovery info
+        source_words, stardict_recovery = extract_words_from_stardict(file_path, "source")
+        target_words, _ = extract_words_from_stardict(file_path, "target")
     
     else:
         print(f"Unsupported file format: {file_path}")
