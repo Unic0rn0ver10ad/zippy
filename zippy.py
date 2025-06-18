@@ -45,6 +45,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 from typing import List, Tuple, Optional, Set, Iterable
 from pathlib import Path
+import random
 
 
 # Unicode ranges for different writing systems
@@ -553,28 +554,39 @@ def extract_multiline_translation_words(lines: List[str], line_idx: int) -> Iter
         break
 
 
-def detect_target_language_script(lines: List[str], sample_size: int = 1000) -> str:
-    """
-    Detect the primary non-Latin script in the dictionary to identify target language.
-    
+def detect_target_language_script(lines: List[str], sample_size: int = 500) -> str:
+    """Detect the primary non-Latin script in a dictionary.
+
+    The function inspects a subset of the provided lines. When ``lines`` contains
+    more entries than ``sample_size``, a random selection of ``sample_size`` lines
+    is used. Short files are scanned in full. This prevents unnecessarily large
+    scans while still sampling content spread across the file.
+
     Args:
         lines: Dictionary lines to analyze
-        sample_size: Number of lines to sample for detection
-        
+        sample_size: Maximum number of lines to sample for detection
+
     Returns:
-        Detected script type: 'arabic', 'cyrillic', 'cjk', 'devanagari', or 'latin'
+        Detected script type: ``'arabic'``, ``'cyrillic'``, ``'cjk'``,
+        ``'devanagari'`` or ``'latin'``.
     """
     script_counts = {
         'arabic': 0,
-        'cyrillic': 0, 
+        'cyrillic': 0,
         'cjk': 0,
         'devanagari': 0,
         'latin': 0
     }
-    
-    # Sample lines throughout the dictionary
-    step = max(1, len(lines) // sample_size)
-    for i in range(0, len(lines), step):
+
+    if not lines:
+        return 'latin'
+
+    if len(lines) > sample_size:
+        indices = sorted(random.sample(range(len(lines)), k=sample_size))
+    else:
+        indices = range(len(lines))
+
+    for i in indices:
         line = lines[i]
         
         for char in line:
