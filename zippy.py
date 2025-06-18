@@ -376,6 +376,9 @@ _IPA_MARKER_RE = re.compile(
     r"[ɐəɪɛɜːʃɹɔɑɒæʌʔɘɯɤɞɨʊʉɵɶœøɛ̃ɔ̃ɑ̃ˈˌ]"
 )
 
+# Precompiled regex for simple phonetic patterns
+PRONUNCIATION_SIMPLE_RE = re.compile(r"/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/")
+
 # Translation table for common punctuation replacements
 _TRANSLATE_MAP = str.maketrans({
     ',': ' ',
