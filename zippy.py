@@ -447,6 +447,29 @@ def extract_script_specific_words(translation: str, script: str) -> Iterable[str
             yield clean
 
 
+def _yield_words_by_script(line: str, script: str) -> Iterable[str]:
+    """Yield cleaned words from ``line`` belonging to ``script``."""
+    if script == 'cjk':
+        parts = re.split(r'[,，、。；;]+|\s+', line.strip())
+        for part in parts:
+            clean = part.strip('.,，、。；; ')
+            if clean and contains_cjk(clean):
+                yield clean
+        return
+
+    ranges = {
+        'arabic': [(0x0600, 0x06FF)],
+        'cyrillic': [(0x0400, 0x04FF)],
+        'devanagari': [(0x0900, 0x097F)],
+    }.get(script, [])
+
+    for word in line.split():
+        clean = clean_word(word)
+        if clean and len(clean) >= 2:
+            if all(any(start <= ord(c) <= end for start, end in ranges) or c in ' -' for c in clean):
+                yield clean
+
+
 def extract_english_words(translation: str) -> Iterable[str]:
     """Yield English words from translation text."""
     parts = translation.translate(_TRANSLATE_MAP)
@@ -585,67 +608,51 @@ def extract_multiline_translation_words(lines: List[str], line_idx: int) -> Iter
         break
 
 
-def detect_target_language_script(lines: List[str], sample_size: int = 500) -> str:
+def detect_target_language_script(lines: Iterable[str], sample_size: int = 500) -> str:
     """Detect the primary non-Latin script in a dictionary.
 
-    The function inspects a subset of the provided lines. When ``lines`` contains
-    more entries than ``sample_size``, a random selection of ``sample_size`` lines
-    is used. Short files are scanned in full. This prevents unnecessarily large
-    scans while still sampling content spread across the file.
+    Only the first ``sample_size`` lines of ``lines`` are inspected.  This keeps
+    memory usage small when working with very large dictionaries.
 
     Args:
-        lines: Dictionary lines to analyze
+        lines: Iterable of dictionary lines
         sample_size: Maximum number of lines to sample for detection
 
     Returns:
         Detected script type: ``'arabic'``, ``'cyrillic'``, ``'cjk'``,
         ``'devanagari'`` or ``'latin'``.
     """
-    script_counts = {
-        'arabic': 0,
-        'cyrillic': 0,
-        'cjk': 0,
-        'devanagari': 0,
-        'latin': 0
-    }
+    from collections import Counter
 
-    if not lines:
-        return 'latin'
+    counts = Counter()
 
-    if len(lines) > sample_size:
-        indices = sorted(random.sample(range(len(lines)), k=sample_size))
-    else:
-        indices = range(len(lines))
-
-    for i in indices:
-        line = lines[i]
-        
+    for i, line in enumerate(lines):
+        if i >= sample_size:
+            break
         for char in line:
             code = ord(char)
-            if 0x0600 <= code <= 0x06FF:  # Arabic
-                script_counts['arabic'] += 1
-            elif 0x0400 <= code <= 0x04FF:  # Cyrillic
-                script_counts['cyrillic'] += 1
-            elif (0x4E00 <= code <= 0x9FAF or  # CJK Unified
-                  0x3040 <= code <= 0x309F or  # Hiragana
-                  0x30A0 <= code <= 0x30FF):   # Katakana
-                script_counts['cjk'] += 1
-            elif 0x0900 <= code <= 0x097F:  # Devanagari
-                script_counts['devanagari'] += 1
-            elif 0x0020 <= code <= 0x007F:  # Basic Latin
-                script_counts['latin'] += 1
-    
-    # Return the most common non-Latin script, or Latin if none found
-    non_latin_scripts = {k: v for k, v in script_counts.items() if k != 'latin' and v > 0}
-    if non_latin_scripts:
-        max_script = 'latin'
-        max_count = 0
-        for script, count in non_latin_scripts.items():
-            if count > max_count:
-                max_count = count
-                max_script = script
-        return max_script
-    return 'latin'
+            if 0x0600 <= code <= 0x06FF:
+                counts['arabic'] += 1
+            elif 0x0400 <= code <= 0x04FF:
+                counts['cyrillic'] += 1
+            elif (0x4E00 <= code <= 0x9FAF or
+                  0x3040 <= code <= 0x309F or
+                  0x30A0 <= code <= 0x30FF):
+                counts['cjk'] += 1
+            elif 0x0900 <= code <= 0x097F:
+                counts['devanagari'] += 1
+            elif 0x0020 <= code <= 0x007F:
+                counts['latin'] += 1
+
+    if not counts:
+        return 'latin'
+
+    # Discard Latin if other scripts are present
+    counts.pop('latin', None)
+    if not counts:
+        return 'latin'
+
+    return max(counts, key=counts.get)
 
 
 def extract_words_by_script_detection(lines: Iterable[str],
@@ -676,77 +683,24 @@ def extract_words_by_script_detection(lines: Iterable[str],
             continue
         
         if extract_language == "source":
-            # Extract source language (usually Latin script with pronunciation)
             if '/' in line:
                 word = extract_pronunciation_word(line)
                 if word and is_valid_word(word):
                     words.append(word)
-            # Also check for simple headwords without pronunciation
             elif (normalize_word(line).isalpha() and
                   len(line) >= 2 and
                   all(ord(char) < 256 for char in line) and
-                  not any(0x0600 <= ord(char) <= 0x06FF for char in line)):  # Not Arabic
+                  not any(0x0600 <= ord(char) <= 0x06FF for char in line)):
                 words.append(line)
-        
-        else:  # target language
-            # Use script detection to identify target language words
-            if target_script == 'arabic':
-                if any(0x0600 <= ord(char) <= 0x06FF for char in line):
-                    # Extract Arabic words
-                    words.extend(
-                        clean
-                        for word in line.split()
-                        for clean in [clean_word(word)]
-                        if (
-                            clean
-                            and len(clean) >= 2
-                            and all(0x0600 <= ord(c) <= 0x06FF or c in ' -' for c in clean)
-                        )
-                    )
-            
-            elif target_script == 'cyrillic':
-                if any(0x0400 <= ord(char) <= 0x04FF for char in line):
-                    # Extract Cyrillic words
-                    words.extend(
-                        clean
-                        for word in line.split()
-                        for clean in [clean_word(word)]
-                        if (
-                            clean
-                            and len(clean) >= 2
-                            and all(0x0400 <= ord(c) <= 0x04FF or c in ' -' for c in clean)
-                        )
-                    )
-            
-            elif target_script == 'cjk':
-                if contains_cjk(line):
-                    # Extract CJK words - preserve whole words, not individual characters
-                    parts = re.split(r'[,，、。；;]+|\s+', line.strip())
-                    words.extend(
-                        clean
-                        for part in parts
-                        for clean in [part.strip('.,，、。；; ')]
-                        if clean and len(clean) >= 1 and contains_cjk(clean)
-                    )
-            
-            elif target_script == 'devanagari':
-                if any(0x0900 <= ord(char) <= 0x097F for char in line):
-                    # Extract Devanagari words
-                    words.extend(
-                        clean
-                        for word in line.split()
-                        for clean in [clean_word(word)]
-                        if (
-                            clean
-                            and len(clean) >= 2
-                            and all(0x0900 <= ord(c) <= 0x097F or c in ' -' for c in clean)
-                        )
-                    )
-            
-            else:  # Latin script fallback
-                # Extract non-pronunciation Latin words
-                if (not ('/' in line and any(char in line for char in 'ˈˌɑɛɪəɹθð')) and
-                    normalize_word(line).isalpha()):
+
+        else:
+            if target_script in ['arabic', 'cyrillic', 'devanagari', 'cjk']:
+                if ((target_script == 'cjk' and contains_cjk(line)) or
+                    (target_script != 'cjk' and any(is_script_character(c, target_script) for c in line))):
+                    words.extend(_yield_words_by_script(line, target_script))
+            else:
+                if (not ('/' in line and any(ch in line for ch in 'ˈˌɑɛɪəɹθð')) and
+                        normalize_word(line).isalpha()):
                     words.append(line)
     
     return words
@@ -985,6 +939,8 @@ def extract_words_from_gzip_content(lines_iter: Iterable[str],
     Returns:
         List of extracted words
     """
+    # Convert iterable to list once so that multiple detection passes reuse the
+    # same data. This avoids reopening the file or re-reading its contents.
     lines = [line.rstrip('\n') for line in lines_iter]
     
     # Detect the target language script
@@ -1436,13 +1392,14 @@ def process_dictionary_file(file_path: str,
         target_lang: Target language name
     """
     stardict_recovery = 0
-    
+
     if file_path.endswith('.dict.dz'):
-        # Process gzipped dictionary in streaming mode
+        # Read the compressed dictionary only once
         with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
-            source_words = extract_words_from_gzip_content(f, "source", is_dz_file=True)
-        with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
-            target_words = extract_words_from_gzip_content(f, "target", is_dz_file=True)
+            lines = [ln.rstrip('\n') for ln in f]
+
+        source_words = extract_words_from_gzip_content(lines, "source", is_dz_file=True)
+        target_words = extract_words_from_gzip_content(lines, "target", is_dz_file=True)
     
     elif file_path.endswith('.tei'):
         # Process TEI XML format
@@ -1596,4 +1553,3 @@ Examples:
 
 if __name__ == "__main__":
     main()
-    
