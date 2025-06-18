@@ -43,7 +43,7 @@ import string
 import tarfile
 import tempfile
 import xml.etree.ElementTree as ET
-from typing import List, Tuple, Optional, Set
+from typing import List, Tuple, Optional, Set, Iterable
 from pathlib import Path
 
 
@@ -366,23 +366,19 @@ def extract_pronunciation_word(line: str) -> Optional[str]:
     return None
 
 
-def extract_simple_translation_words(translation: str) -> List[str]:
-    """Extract words from simple translation text."""
-    words = []
+def extract_simple_translation_words(translation: str) -> Iterable[str]:
+    """Yield words from simple translation text."""
     parts = translation.replace(',', ' ').replace('،', ' ')  # Arabic comma
-    
+
     for word in parts.split():
         clean = clean_word(word)
         if clean.isalpha():
-            words.append(clean)
-    
-    return words
+            yield clean
 
 
-def extract_script_specific_words(translation: str, script: str) -> List[str]:
-    """Extract words from translation text for specific scripts."""
-    words = []
-    
+def extract_script_specific_words(translation: str, script: str) -> Iterable[str]:
+    """Yield words from translation text for specific scripts."""
+
     # Handle script-specific separators
     separators = {
         'cjk_hiragana': ('、', ' '),
@@ -390,44 +386,38 @@ def extract_script_specific_words(translation: str, script: str) -> List[str]:
         'cjk_unified': ('、', ' '),
         'arabic': ('،', ' '),
     }
-    
+
     sep1, sep2 = separators.get(script, (',', ' '))
     parts = translation.replace(sep1, sep2).replace(',', ' ')
-    
+
     for word in parts.split():
         clean = clean_word(word)
         # Check if word contains characters from the target script
         if script in ['cjk_hiragana', 'cjk_katakana', 'cjk_unified']:
             if contains_cjk(clean):
-                words.append(clean)
+                yield clean
         elif contains_script(clean, script):
-            words.append(clean)
-    
-    return words
+            yield clean
 
 
-def extract_english_words(translation: str) -> List[str]:
-    """Extract English words from translation text."""
-    words = []
+def extract_english_words(translation: str) -> Iterable[str]:
+    """Yield English words from translation text."""
     parts = translation.replace(',', ' ')
-    
+
     for word in parts.split():
         clean = clean_word(word)
-        if (clean.isalpha() 
+        if (clean.isalpha()
             and all(ord(char) < 256 for char in clean)):
-            words.append(clean)
-    
-    return words
+            yield clean
 
 
-def process_multilingual_translation(translation: str) -> List[str]:
-    """Process translation and extract words based on detected script."""
-    words = []
-    
+def process_multilingual_translation(translation: str) -> Iterable[str]:
+    """Yield words based on detected script in the translation."""
+
     # Skip quoted translations
     if translation.startswith('"') and translation.endswith('"'):
-        return words
-    
+        return []
+
     # Detect and extract based on script
     if contains_script(translation, 'devanagari'):
         # Handle special formatting for Hindi
@@ -435,26 +425,26 @@ def process_multilingual_translation(translation: str) -> List[str]:
             parts = translation.replace('~', ' ').replace(',', ' ')
             for word in parts.split():
                 clean = clean_word(word)
-                if (len(clean) >= 1 
-                    and all(is_script_character(char, 'devanagari') for char in clean)):
-                    words.append(clean)
-    
+                if (
+                    len(clean) >= 1
+                    and all(is_script_character(char, 'devanagari') for char in clean)
+                ):
+                    yield clean
+
     elif contains_script(translation, 'arabic'):
         # Skip pronunciation guides
         if '/' in translation and any(char in translation for char in 'ɐəɪəɹˈˌ'):
-            return words
-        words.extend(extract_script_specific_words(translation, 'arabic'))
-    
+            return []
+        yield from extract_script_specific_words(translation, 'arabic')
+
     elif contains_cjk(translation):
-        words.extend(extract_script_specific_words(translation, 'cjk_hiragana'))
-    
+        yield from extract_script_specific_words(translation, 'cjk_hiragana')
+
     elif contains_script(translation, 'cyrillic'):
-        words.extend(extract_script_specific_words(translation, 'cyrillic'))
-    
+        yield from extract_script_specific_words(translation, 'cyrillic')
+
     else:
-        words.extend(extract_english_words(translation))
-    
-    return words
+        yield from extract_english_words(translation)
 
 
 def detect_simple_format(lines: List[str]) -> bool:
@@ -518,9 +508,8 @@ def detect_simple_format(lines: List[str]) -> bool:
     return False
 
 
-def extract_multiline_translation_words(lines: List[str], line_idx: int) -> List[str]:
-    """Extract English words from dictionary's multiline format."""
-    words = []
+def extract_multiline_translation_words(lines: List[str], line_idx: int) -> Iterable[str]:
+    """Yield English words from dictionary's multiline format."""
     
     # Check next few lines for translations
     for j in range(1, 4):
@@ -545,12 +534,10 @@ def extract_multiline_translation_words(lines: List[str], line_idx: int) -> List
         
         for word in parts.split():
             clean = clean_word(word)
-            if (clean.isalpha() 
+            if (clean.isalpha()
                 and all(ord(char) < 128 for char in clean)):
-                words.append(clean)
+                yield clean
         break
-    
-    return words
 
 
 def detect_target_language_script(lines: List[str], sample_size: int = 1000) -> str:
@@ -650,48 +637,56 @@ def extract_words_by_script_detection(lines: List[str],
             if target_script == 'arabic':
                 if any(0x0600 <= ord(char) <= 0x06FF for char in line):
                     # Extract Arabic words
-                    arabic_words = []
-                    for word in line.split():
-                        clean = clean_word(word)
-                        if (clean and len(clean) >= 2 and 
-                            all(0x0600 <= ord(char) <= 0x06FF or char in ' -' for char in clean)):
-                            arabic_words.append(clean)
-                    words.extend(arabic_words)
+                    words.extend(
+                        clean
+                        for word in line.split()
+                        for clean in [clean_word(word)]
+                        if (
+                            clean
+                            and len(clean) >= 2
+                            and all(0x0600 <= ord(c) <= 0x06FF or c in ' -' for c in clean)
+                        )
+                    )
             
             elif target_script == 'cyrillic':
                 if any(0x0400 <= ord(char) <= 0x04FF for char in line):
                     # Extract Cyrillic words
-                    cyrillic_words = []
-                    for word in line.split():
-                        clean = clean_word(word)
-                        if (clean and len(clean) >= 2 and
-                            all(0x0400 <= ord(char) <= 0x04FF or char in ' -' for char in clean)):
-                            cyrillic_words.append(clean)
-                    words.extend(cyrillic_words)
+                    words.extend(
+                        clean
+                        for word in line.split()
+                        for clean in [clean_word(word)]
+                        if (
+                            clean
+                            and len(clean) >= 2
+                            and all(0x0400 <= ord(c) <= 0x04FF or c in ' -' for c in clean)
+                        )
+                    )
             
             elif target_script == 'cjk':
                 if contains_cjk(line):
                     # Extract CJK words - preserve whole words, not individual characters
-                    cjk_words = []
-                    # Split by punctuation and spaces but preserve CJK word boundaries
                     import re
                     parts = re.split(r'[,，、。；;]+|\s+', line.strip())
-                    for part in parts:
-                        clean = part.strip('.,，、。；; ')
-                        if (clean and len(clean) >= 1 and contains_cjk(clean)):
-                            cjk_words.append(clean)
-                    words.extend(cjk_words)
+                    words.extend(
+                        clean
+                        for part in parts
+                        for clean in [part.strip('.,，、。；; ')]
+                        if clean and len(clean) >= 1 and contains_cjk(clean)
+                    )
             
             elif target_script == 'devanagari':
                 if any(0x0900 <= ord(char) <= 0x097F for char in line):
                     # Extract Devanagari words
-                    devanagari_words = []
-                    for word in line.split():
-                        clean = clean_word(word)
-                        if (clean and len(clean) >= 2 and
-                            all(0x0900 <= ord(char) <= 0x097F or char in ' -' for char in clean)):
-                            devanagari_words.append(clean)
-                    words.extend(devanagari_words)
+                    words.extend(
+                        clean
+                        for word in line.split()
+                        for clean in [clean_word(word)]
+                        if (
+                            clean
+                            and len(clean) >= 2
+                            and all(0x0900 <= ord(c) <= 0x097F or c in ' -' for c in clean)
+                        )
+                    )
             
             else:  # Latin script fallback
                 # Extract non-pronunciation Latin words
@@ -851,15 +846,18 @@ def extract_words_with_pattern_detection(lines: List[str],
                 # Extract target words from non-pronunciation line
                 if not should_include_word_by_pos(line2, POS_FILTERS):
                     continue
-                # Clean and extract target words
-                target_words = []
                 cleaned_line = line2.replace(',', ' ').replace(';', ' ')
-                for word in cleaned_line.split():
-                    clean = clean_word(word)
-                    if (clean and len(clean) >= 2 and clean.replace('-', '').isalpha() and
-                        all(ord(char) < 256 for char in clean)):  # ASCII check for English
-                        target_words.append(clean)
-                words.extend(target_words)
+                words.extend(
+                    clean
+                    for word in cleaned_line.split()
+                    for clean in [clean_word(word)]
+                    if (
+                        clean
+                        and len(clean) >= 2
+                        and clean.replace('-', '').isalpha()
+                        and all(ord(char) < 256 for char in clean)
+                    )
+                )
         
         elif pattern == 'target-source':
             if extract_language == "target" and has_pronunciation_1 and not has_pronunciation_2:
@@ -873,15 +871,18 @@ def extract_words_with_pattern_detection(lines: List[str],
                 # Extract source words from non-pronunciation line
                 if not should_include_word_by_pos(line2, POS_FILTERS):
                     continue
-                # Clean and extract source words
-                source_words = []
                 cleaned_line = line2.replace(',', ' ').replace(';', ' ')
-                for word in cleaned_line.split():
-                    clean = clean_word(word)
-                    if (clean and len(clean) >= 2 and clean.replace('-', '').isalpha() and
-                        all(ord(char) < 256 for char in clean)):
-                        source_words.append(clean)
-                words.extend(source_words)
+                words.extend(
+                    clean
+                    for word in cleaned_line.split()
+                    for clean in [clean_word(word)]
+                    if (
+                        clean
+                        and len(clean) >= 2
+                        and clean.replace('-', '').isalpha()
+                        and all(ord(char) < 256 for char in clean)
+                    )
+                )
     
     return words
 
@@ -918,15 +919,26 @@ def extract_multiline_format_words(lines: List[str], extract_language: str) -> L
                     words.append(word)
             elif extract_language == "target":
                 # Extract target language words from line2
-                target_words = []
                 cleaned_line = line2.replace(',', ' ').replace(';', ' ').replace('2.', ' ')
-                for word in cleaned_line.split():
-                    clean = clean_word(word)
-                    if (clean and len(clean) >= 3 and clean.replace('-', '').isalpha() and
-                        all(ord(char) < 256 for char in clean) and  # Basic Latin chars
-                        clean.lower() not in ['the', 'and', 'of', 'or', 'in', 'to', 'for', 'with', 'from', 'by', 'at', 'on', 'an', 'as', 'be', 'is', 'are', 'was', 'were', 'been', 'have', 'has', 'had', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'must']):  # Filter common English words
-                        target_words.append(clean)
-                words.extend(target_words)
+                words.extend(
+                    clean
+                    for word in cleaned_line.split()
+                    for clean in [clean_word(word)]
+                    if (
+                        clean
+                        and len(clean) >= 3
+                        and clean.replace('-', '').isalpha()
+                        and all(ord(char) < 256 for char in clean)
+                        and clean.lower()
+                        not in [
+                            'the', 'and', 'of', 'or', 'in', 'to', 'for', 'with',
+                            'from', 'by', 'at', 'on', 'an', 'as', 'be', 'is',
+                            'are', 'was', 'were', 'been', 'have', 'has', 'had',
+                            'will', 'would', 'could', 'should', 'may', 'might',
+                            'can', 'must'
+                        ]
+                    )
+                )
             
             i += 3  # Skip to next entry
         else:
