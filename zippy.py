@@ -126,6 +126,15 @@ LANGUAGE_MAPPINGS = {
     'swh': 'swahili',
 }
 
+# Basic English stopwords used when filtering extracted words
+ENGLISH_STOPWORDS: Set[str] = {
+    'the', 'and', 'of', 'or', 'in', 'to', 'for', 'with',
+    'from', 'by', 'at', 'on', 'an', 'as', 'be', 'is',
+    'are', 'was', 'were', 'been', 'have', 'has', 'had',
+    'will', 'would', 'could', 'should', 'may', 'might',
+    'can', 'must'
+}
+
 def get_language_mapping(name_or_code: str) -> Tuple[str, str]:
     """
     Given either a filename (e.g. 'freedict-eng-ces-0.1.3.dictd.tar.xz')
@@ -362,6 +371,19 @@ def clean_word(word: str) -> str:
 # Precompiled regex for removing punctuation across the codebase
 _NORMALIZE_RE = re.compile(r"[-‐'.,/ ]+")
 
+# Regex to detect IPA characters or markers used in multiple functions
+_IPA_MARKER_RE = re.compile(
+    r"[ɐəɪɛɜːʃɹɔɑɒæʌʔɘɯɤɞɨʊʉɵɶœøɛ̃ɔ̃ɑ̃ˈˌ]"
+)
+
+# Translation table for common punctuation replacements
+_TRANSLATE_MAP = str.maketrans({
+    ',': ' ',
+    '،': ' ',  # Arabic comma
+    '、': ' ',  # CJK comma
+    '~': ' ',
+})
+
 
 def normalize_word(word: str) -> str:
     """Return word with common punctuation removed."""
@@ -373,10 +395,10 @@ def has_pronunciation_markers(line: str) -> bool:
     if '/' not in line:
         return False
     # Check for IPA characters
-    if any(char in line for char in 'ɐəɪɛɜːʃɹɔɑɒæʌʔɪɘɯɤɞɨʊʉɛɔɵɶœøɪəɛ̃ɔ̃ɑ̃'):
+    if _IPA_MARKER_RE.search(line):
         return True
     # Check for simple phonetic patterns like /ad/, /abkazi/
-    if re.search(r'/[a-zA-Zɛɔɑɪəɔ̃ɑ̃ɛ̃]+/', line):
+    if PRONUNCIATION_SIMPLE_RE.search(line):
         return True
     return False
 
@@ -400,7 +422,7 @@ def extract_pronunciation_word(line: str) -> Optional[str]:
 
 def extract_simple_translation_words(translation: str) -> Iterable[str]:
     """Yield words from simple translation text."""
-    parts = translation.replace(',', ' ').replace('،', ' ')  # Arabic comma
+    parts = translation.translate(_TRANSLATE_MAP)
 
     for word in parts.split():
         clean = clean_word(word)
@@ -410,17 +432,7 @@ def extract_simple_translation_words(translation: str) -> Iterable[str]:
 
 def extract_script_specific_words(translation: str, script: str) -> Iterable[str]:
     """Yield words from translation text for specific scripts."""
-
-    # Handle script-specific separators
-    separators = {
-        'cjk_hiragana': ('、', ' '),
-        'cjk_katakana': ('、', ' '),
-        'cjk_unified': ('、', ' '),
-        'arabic': ('،', ' '),
-    }
-
-    sep1, sep2 = separators.get(script, (',', ' '))
-    parts = translation.replace(sep1, sep2).replace(',', ' ')
+    parts = translation.translate(_TRANSLATE_MAP)
 
     for word in parts.split():
         clean = clean_word(word)
@@ -434,7 +446,7 @@ def extract_script_specific_words(translation: str, script: str) -> Iterable[str
 
 def extract_english_words(translation: str) -> Iterable[str]:
     """Yield English words from translation text."""
-    parts = translation.replace(',', ' ')
+    parts = translation.translate(_TRANSLATE_MAP)
 
     for word in parts.split():
         clean = clean_word(word)
@@ -449,34 +461,32 @@ def process_multilingual_translation(translation: str) -> Iterable[str]:
     # Skip quoted translations
     if translation.startswith('"') and translation.endswith('"'):
         return []
+    cleaned = translation.translate(_TRANSLATE_MAP)
 
     # Detect and extract based on script
-    if contains_script(translation, 'devanagari'):
-        # Handle special formatting for Hindi
-        if not translation.startswith('"'):
-            parts = translation.replace('~', ' ').replace(',', ' ')
-            for word in parts.split():
-                clean = clean_word(word)
-                if (
-                    len(clean) >= 1
-                    and all(is_script_character(char, 'devanagari') for char in clean)
-                ):
-                    yield clean
+    if contains_script(cleaned, 'devanagari'):
+        for word in cleaned.split():
+            clean = clean_word(word)
+            if (
+                len(clean) >= 1
+                and all(is_script_character(char, 'devanagari') for char in clean)
+            ):
+                yield clean
 
-    elif contains_script(translation, 'arabic'):
+    elif contains_script(cleaned, 'arabic'):
         # Skip pronunciation guides
-        if '/' in translation and any(char in translation for char in 'ɐəɪəɹˈˌ'):
+        if '/' in translation and _IPA_MARKER_RE.search(translation):
             return []
-        yield from extract_script_specific_words(translation, 'arabic')
+        yield from extract_script_specific_words(cleaned, 'arabic')
 
-    elif contains_cjk(translation):
-        yield from extract_script_specific_words(translation, 'cjk_hiragana')
+    elif contains_cjk(cleaned):
+        yield from extract_script_specific_words(cleaned, 'cjk_hiragana')
 
-    elif contains_script(translation, 'cyrillic'):
-        yield from extract_script_specific_words(translation, 'cyrillic')
+    elif contains_script(cleaned, 'cyrillic'):
+        yield from extract_script_specific_words(cleaned, 'cyrillic')
 
     else:
-        yield from extract_english_words(translation)
+        yield from extract_english_words(cleaned)
 
 
 def detect_simple_format(lines: List[str]) -> bool:
@@ -635,7 +645,7 @@ def detect_target_language_script(lines: List[str], sample_size: int = 500) -> s
     return 'latin'
 
 
-def extract_words_by_script_detection(lines: List[str], 
+def extract_words_by_script_detection(lines: Iterable[str],
                                      extract_language: str,
                                      target_script: str) -> List[str]:
     """
@@ -947,14 +957,7 @@ def extract_multiline_format_words(lines: List[str], extract_language: str) -> L
                         and len(clean) >= 3
                         and normalize_word(clean).isalpha()
                         and all(ord(char) < 256 for char in clean)
-                        and clean.lower()
-                        not in [
-                            'the', 'and', 'of', 'or', 'in', 'to', 'for', 'with',
-                            'from', 'by', 'at', 'on', 'an', 'as', 'be', 'is',
-                            'are', 'was', 'were', 'been', 'have', 'has', 'had',
-                            'will', 'would', 'could', 'should', 'may', 'might',
-                            'can', 'must'
-                        ]
+                        and clean.lower() not in ENGLISH_STOPWORDS
                     )
                 )
             
@@ -965,21 +968,21 @@ def extract_multiline_format_words(lines: List[str], extract_language: str) -> L
     return words
 
 
-def extract_words_from_gzip_content(content: bytes, 
+def extract_words_from_gzip_content(lines_iter: Iterable[str],
                                    extract_language: str = "source",
                                    is_dz_file: bool = False) -> List[str]:
     """
     Extract words from gzipped dictionary content using intelligent pattern detection.
     
     Args:
-        content: Raw gzipped content
+        lines_iter: Iterable yielding lines from the gzipped dictionary
         extract_language: Either "source" or "target"
         is_dz_file: True if this is a .dz file (different pattern logic)
         
     Returns:
         List of extracted words
     """
-    lines = content.decode('utf-8', errors='ignore').splitlines()
+    lines = [line.rstrip('\n') for line in lines_iter]
     
     # Detect the target language script
     target_script = detect_target_language_script(lines)
@@ -1015,40 +1018,34 @@ def extract_words_from_gzip_content(content: bytes,
     return words
 
 
-def _extract_simple_format_words(lines: List[str], 
+def _extract_simple_format_words(lines: Iterable[str],
                                 extract_language: str) -> List[str]:
     """Extract words from simple headword/translation format."""
     words = []
-    i = 0
-    
-    while i < len(lines):
-        line = lines[i].strip()
-        
+    iterator = iter(lines)
+
+    for line in iterator:
+        line = line.strip()
+
         # Skip headers and empty lines
         if not line or is_header_line(line):
-            i += 1
             continue
-        
-        # Process headword/translation pair
-        if i + 1 < len(lines):
-            next_line = lines[i + 1].strip()
-            
-            if extract_language == "source":
-                # Extract headword - more permissive validation for Kurdish and other languages
-                clean_line = clean_word(line)
-                if (clean_line and len(clean_line) >= 1
-                    and not any(char.isdigit() for char in clean_line)
-                    and not any(char in clean_line for char in ['(', ')', '[', ']', '<', '>', '/', '\\'])
-                    and should_include_word_by_pos(line, POS_FILTERS)):
-                    words.append(clean_line)
-            else:
-                # Extract translation words
-                if next_line:
-                    words.extend(extract_simple_translation_words(next_line))
-            
-            i += 2  # Skip both lines
+
+        next_line = next(iterator, '').strip()
+
+        if extract_language == "source":
+            clean_line = clean_word(line)
+            if (clean_line and len(clean_line) >= 1
+                and not any(char.isdigit() for char in clean_line)
+                and not any(char in clean_line for char in ['(', ')', '[', ']', '<', '>', '/', '\\'])
+                and should_include_word_by_pos(line, POS_FILTERS)):
+                words.append(clean_line)
         else:
-            i += 1
+            if next_line:
+                words.extend(extract_simple_translation_words(next_line))
+
+        # already consumed next_line via iterator
+        # No else branch; iterator naturally advances
     
     return words
 
@@ -1157,8 +1154,8 @@ def _extract_complex_format_words(lines: List[str],
     return words
 
 
-def extract_words_from_stardict(stardict_dir: str, 
-                               extract_language: str = "source") -> List[str]:
+def extract_words_from_stardict(stardict_dir: str,
+                               extract_language: str = "source") -> Tuple[List[str], int]:
     """
     Extract words from StarDict format directory.
     
@@ -1167,12 +1164,13 @@ def extract_words_from_stardict(stardict_dir: str,
         extract_language: Either "source" or "target"
         
     Returns:
-        List of extracted words
+        Tuple of (extracted words list, count of words recovered from index)
     """
     import struct
     import gzip
     
     words = []
+    recovered_count = 0
     
     try:
         # Find the base name by looking for .ifo file
@@ -1183,13 +1181,13 @@ def extract_words_from_stardict(stardict_dir: str,
                 break
         
         if not base_name:
-            return words
+            return words, recovered_count
         
         idx_file = os.path.join(stardict_dir, base_name + '.idx.gz')
         dict_file = os.path.join(stardict_dir, base_name + '.dict.dz')
         
         if not (os.path.exists(idx_file) and os.path.exists(dict_file)):
-            return words
+            return words, recovered_count
         
         # Read the index file
         with gzip.open(idx_file, 'rb') as f:
@@ -1234,7 +1232,7 @@ def extract_words_from_stardict(stardict_dir: str,
         # For StarDict files with invalid offsets, also extract headwords directly from index
         # This recovers words that have corrupted offset data but valid headwords
         if len(entries) < pos // 12:  # Rough estimate - if we lost too many entries
-            print(f"StarDict offset issues detected, extracting from index directly...")
+            print("StarDict offset issues detected, extracting from index directly...")
             existing_words = {w for w, d in entries}  # Use set for O(1) lookup
             pos = 0
             direct_words = 0
@@ -1264,7 +1262,7 @@ def extract_words_from_stardict(stardict_dir: str,
                 except (UnicodeDecodeError, struct.error):
                     continue
             
-            print(f"Recovered {direct_words} additional words from index")
+            recovered_count = direct_words
         
         # Extract words based on language from successfully parsed entries
         for word, definition in entries:
@@ -1284,25 +1282,28 @@ def extract_words_from_stardict(stardict_dir: str,
     except (OSError, struct.error, UnicodeDecodeError):
         pass
     
-    return words
+    return words, recovered_count
 
 
-def extract_words_from_tei_xml(xml_content: str, 
+def extract_words_from_tei_xml(xml_source: str,
                               extract_language: str = "target") -> List[str]:
-    """
-    Extract words from TEI XML format.
-    
+    """Extract words from TEI XML format.
+
     Args:
-        xml_content: TEI XML content as string
+        xml_source: Path to TEI XML file or XML content string
         extract_language: Either "source" or "target"
-        
+
     Returns:
         List of extracted words
     """
     words = []
-    
+
     try:
-        root = ET.fromstring(xml_content)
+        if os.path.exists(xml_source):
+            tree = ET.parse(xml_source)
+            root = tree.getroot()
+        else:
+            root = ET.fromstring(xml_source)
         
         for entry in root.iter():
             if not (entry.tag.endswith('}entry') or entry.tag == 'entry'):
@@ -1434,45 +1435,21 @@ def process_dictionary_file(file_path: str,
     stardict_recovery = 0
     
     if file_path.endswith('.dict.dz'):
-        # Process gzipped dictionary
-        with gzip.open(file_path, 'rb') as f:
-            content = f.read()
-        
-        # Pass is_dz_file=True for .dz files to handle their inverted pattern logic
-        source_words = extract_words_from_gzip_content(content, "source", is_dz_file=True)
-        target_words = extract_words_from_gzip_content(content, "target", is_dz_file=True)
+        # Process gzipped dictionary in streaming mode
+        with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
+            source_words = extract_words_from_gzip_content(f, "source", is_dz_file=True)
+        with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
+            target_words = extract_words_from_gzip_content(f, "target", is_dz_file=True)
     
     elif file_path.endswith('.tei'):
         # Process TEI XML format
-        with open(file_path, 'r', encoding='utf-8') as f:
-            xml_content = f.read()
-        
-        source_words = extract_words_from_tei_xml(xml_content, "source")
-        target_words = extract_words_from_tei_xml(xml_content, "target")
+        source_words = extract_words_from_tei_xml(file_path, "source")
+        target_words = extract_words_from_tei_xml(file_path, "target")
     
     elif os.path.isdir(file_path):
-        # Process StarDict format directory - capture recovery info
-        import sys
-        from io import StringIO
-        
-        # Capture StarDict recovery output
-        old_stdout = sys.stdout
-        sys.stdout = captured_output = StringIO()
-        
-        source_words = extract_words_from_stardict(file_path, "source")
-        target_words = extract_words_from_stardict(file_path, "target")
-        
-        sys.stdout = old_stdout
-        output = captured_output.getvalue()
-        
-        # Extract recovery count from captured output
-        for line in output.split('\n'):
-            if 'Recovered' in line and 'additional words' in line:
-                try:
-                    stardict_recovery = int(line.split()[1])
-                    break
-                except (ValueError, IndexError):
-                    pass
+        # Process StarDict format directory and receive recovery info
+        source_words, stardict_recovery = extract_words_from_stardict(file_path, "source")
+        target_words, _ = extract_words_from_stardict(file_path, "target")
     
     else:
         print(f"Unsupported file format: {file_path}")
