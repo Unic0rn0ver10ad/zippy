@@ -1063,55 +1063,6 @@ def _extract_with_header_skip(lines: List[str],
     return words
 
 
-def _extract_complex_format_words(lines: List[str], 
-                                 extract_language: str) -> List[str]:
-    """Extract words from complex dictionary formats (numbered, multiline)."""
-    words = []
-    i = 0
-    
-    while i < len(lines):
-        line = lines[i].strip()
-        
-        # Skip empty lines and comments
-        if not line or line.startswith('#'):
-            i += 1
-            continue
-        
-        if extract_language == "source":
-            # Extract source words from pronunciation format
-            word = extract_pronunciation_word(line)
-            if word and should_include_word_by_pos(line, POS_FILTERS):
-                words.append(word)
-        
-        else:
-            # Extract target words from various formats
-            if ('/' in line and '<' in line 
-                and not line.startswith(('1. ', '2. ', '3. ', '4. ', '5. ', '"', ' '))):
-                
-                # Try multiline format (German)
-                multiline_words = extract_multiline_translation_words(lines, i)
-                words.extend(multiline_words)
-            
-            elif line.startswith('1. '):
-                # Handle numbered translation format
-                translation = line[3:].strip()
-                words.extend(process_multilingual_translation(translation))
-            
-            else:
-                # Handle alternating format where target words are simple headwords
-                # (like Czech dictionary where Czech words don't have pronunciation markers)
-                clean_line = clean_word(line)
-                if (clean_line and len(clean_line) >= 1
-                    and not any(char.isdigit() for char in clean_line)
-                    and not any(char in clean_line for char in ['(', ')', '[', ']', '<', '>', '/', '\\'])
-                    and not is_header_line(line)
-                    and should_include_word_by_pos(line, POS_FILTERS)):
-                    words.append(clean_line)
-        
-        i += 1
-    
-    return words
-
 
 def extract_words_from_stardict(stardict_dir: str,
                                extract_language: str = "source") -> Tuple[List[str], int]:
