@@ -23,7 +23,7 @@ Supported formats:
 
 ---
 
-## 🧱 Design Philosophy
+## 🤔 Design Philosophy
 
 Zippy is designed to be:
 - **Monolithic**: This single-file structure signals to humans and AIs alike that Zippy is *one thing*. Zippy isn't a library. It isn't a module. It’s definitely not a framework. It’s just a (very long) script. A complete program in one place is easier for AIs to ingest, interpret, and modify.
@@ -34,7 +34,7 @@ Zippy is designed to be:
 
 ---
 
-## 💬 How to Use Zippy
+## 🧭 How to Use Zippy
 
 All dictionaries must be placed in the 'dictionaries' folder for processing. The extracted wordlists will be saved in the 'wordlists' folder. Each dictionary will generate two wordlists: one for the source language and one for the target language. The filenames are based on the dictionary name and possibly the language codes from LANGUAGE_MAPPINGS.
 
@@ -65,5 +65,3 @@ After cleaning the raw wordlist, the next step is to turn it into a wordlist tha
 One technique is to feed the article itself into a reasoning model like [INSERT FAVORITE LLM HERE], along with the wordlist, and ask it to generate a new wordlist that fits the EFF criteria and is fewer than 7,500 entries. 7,500 is an arbitrary number, but it's a good starting point and mimics the size of the EFF's 'large wordlist' here: https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 
 Spot-checking the output of the reasoning model (say, by using Google Translate) is a good idea to convince yourself that the resulting wordlist actually produces fun and memorable passphrases.
-
-Another idea is to not use dictionaries at all - instead, use the AI tools available to translate one of the two EFF wordlists into the desired language. Full disclosure: I haven't tried this yet 🤔 - if I had, and it worked, Zippy would not exist...or not in the same way, at least.
