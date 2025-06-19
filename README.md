@@ -20,6 +20,13 @@ The 'single' mode processes a single dictionary file specified by the user:
 
     python zippy.py single freedict-eng-jpn-2024.10.10.dictd.tar.xz
 
+You can restrict the parts of speech included in the output with the ``--pos``
+flag. By default, nouns, adjectives, adverbs and verbs are included.  The flag
+accepts a space-separated list of POS tags:
+
+    python zippy.py --pos n v        # nouns and verbs only
+    python zippy.py --pos n          # nouns only
+
 You can also just run it in your IDE as the main() function will process all dictionaries by default.
 
 Almost all of the dictionaries used in this project are from FreeDict:

@@ -1484,11 +1484,17 @@ Examples:
                        nargs='?', 
                        choices=['single', 'all'],
                        help='Command to run')
-    parser.add_argument('filename', 
+    parser.add_argument('filename',
                        nargs='?',
                        help='Dictionary filename for single command')
+    parser.add_argument('-p', '--pos',
+                        nargs='+',
+                        help='Space-separated POS tags to include (e.g. -p n v). Default: n adj adv v')
     
     args = parser.parse_args()
+
+    if args.pos:
+        POS_FILTERS['include'] = [p.lower() for p in args.pos]
     
     if args.command == 'single':
         if not args.filename:
