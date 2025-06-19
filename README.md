@@ -3,7 +3,7 @@
 
 ## 🎯 Purpose
 
-Zippy extracts structured wordlists from multilingual dictionary formats (.dict.dz, .tei, StarDict, etc.) for use in the [Halt! What's the Passphrase?] project and other passphrase-generation tools. Zippy eats dictionaries and spits out wordlists.
+Zippy the Dict (it/its) extracts structured wordlists from multilingual dictionary formats (.dict.dz, .tei, StarDict, etc.) for use in the [Halt! What's the Passphrase?] project and other passphrase-generation tools. Zippy eats dictionaries and spits out wordlists.
 
 Supported formats:
 - .dz (gzipped dictionary files)
@@ -19,22 +19,21 @@ Supported formats:
 - **Every line** of Zippy was written and edited by multiple agentic coding system.
 - There is no human-authored logic, structure, or flow.
 - Zippy is *not pretending* to be a traditionally engineered tool.
-- Y'all need to stop saying "code vomit" like it's a bad thing 🤮
+- Zippy is proud of every one of its big beautiful lines of code - there will be no code-shaming here. And y'all need to stop saying "code vomit" like it's a bad thing 🤮
 
 ---
 
 ## 🤔 Design Philosophy
 
 Zippy is designed to be:
-- **Monolithic**: This single-file structure signals to humans and AIs alike that Zippy is *one thing*. Zippy isn't a library. It isn't a module. It’s definitely not a framework. It’s just a (very long) script. A complete program in one place is easier for AIs to ingest, interpret, and modify.
+- **Monolithic**: This single-file structure signals to humans and AIs alike that Zippy is *one thing*. Zippy isn't a library. It isn't a module. It’s definitely not a framework. It’s just a (very long) script. A complete program in one place is easier for AIs to ingest, interpret, and modify. It's also easier this way for humans to supervise the AIs and make sure it's following orders 🫡
 - **Functional** — It does the job, mostly correctly and sort of efficiently.
-- **Transparent** — Code is left monolithic to reflect its AI-generated nature.
-- **Extensible (by AI)** — Expansion of capability will most likely be performed by future AI agents, not humans. Functions are scoped clearly and documented for other agents. Assume your changes will be read and extended by an AI, not a human maintainer.
-- **Readable (by Humans)** — For curiosity, debugging, and adaptation - not for teaching (traditional) software engineering.
+- **Extensible (by AI)** — Expansion of capability will most likely be performed by AI agents, not humans. Functions are scoped clearly and documented for agents, not human maintainers.
+- **Readable (by Humans)** — But only for curiosity, debugging, and adaptation - not for teaching (traditional) software engineering.
 
 ---
 
-## 🧭 How to Use Zippy
+## 🦾 How to Use Zippy
 
 All dictionaries must be placed in the 'dictionaries' folder for processing. The extracted wordlists will be saved in the 'wordlists' folder. Each dictionary will generate two wordlists: one for the source language and one for the target language. The filenames are based on the dictionary name and possibly the language codes from LANGUAGE_MAPPINGS.
 
@@ -54,13 +53,16 @@ accepts a space-separated list of POS tags:
 
     python zippy.py --pos n v        # nouns and verbs only
     python zippy.py --pos n          # nouns only
+
+Zippy also has some debug / logging levels you can set like this:
+
     python zippy.py -v               # show progress messages
     python zippy.py -vv              # debug output
 
 Almost all of the dictionaries used in this project are from FreeDict:
 https://freedict.org/downloads/
 
-The wordlists that Zippy extracts from the dictionaries are honestly not that great. They usually contain a lot of words not in the desired language at the beginning of the file. You'll need to go through each one manually and delete the words that aren't in the desired language - deal with that.
+The wordlists that Zippy extracts from the dictionaries are honestly not that great. They usually contain a lot of words not in the desired language at the beginning of the file. You'll need to go through each one manually and delete the words that aren't in the desired language - deal with that 🐶
 
 After cleaning the raw wordlist, the next step is to turn it into a wordlist that's actually useful for generating passphrases. The EFF has a very good article on it here: https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
 
