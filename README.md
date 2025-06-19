@@ -1,5 +1,5 @@
 # 🤖 Zippy 2.0 Is Here!
-<img src="Zippy2.png" alt="Meet Zippy the Dict 2.0!" width="300">
+<img src="Zippy2.png" alt="Meet Zippy 2.0!" width="300">
 
 ## 🎯 Zippy 2.0 Has A Purpose!
 
