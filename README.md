@@ -54,6 +54,8 @@ accepts a space-separated list of POS tags:
 
     python zippy.py --pos n v        # nouns and verbs only
     python zippy.py --pos n          # nouns only
+    python zippy.py -v               # show progress messages
+    python zippy.py -vv              # debug output
 
 Almost all of the dictionaries used in this project are from FreeDict:
 https://freedict.org/downloads/
