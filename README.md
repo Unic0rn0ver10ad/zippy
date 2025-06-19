@@ -28,7 +28,7 @@ Supported formats:
 Zippy is designed to be:
 - **Monolithic**: This single-file structure signals to humans and AIs alike that Zippy is *one thing*. Zippy isn't a library. It isn't a module. It’s definitely not a framework. It’s just a (very long) script. A complete program in one place is easier for AIs to ingest, interpret, and modify. It also makes it easier for humans to supervise the AI and feel confident that it’s doing what it was told — even if that’s mostly for our own peace of mind 🫡
 - **Functional** — It does the job, mostly correctly and sort of efficiently.
-- **Extensible (by AI)** — Expansion of capability will most likely be performed by AI agents, not humans. Functions are scoped clearly and documented for agents, not human maintainers.
+- **Extensible (by AI)** — Expansion of capability will most likely be performed by AI agents, not humans. Functions are scoped and documented in ways that aim to support agentic understanding.
 - **Readable (by Humans)** — But only for curiosity, debugging, and adaptation - not for teaching (traditional) software engineering.
 
 ---
