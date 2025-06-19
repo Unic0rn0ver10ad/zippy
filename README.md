@@ -3,7 +3,7 @@
 
 ## 🎯 Purpose
 
-Zippy the Dict (it/its) extracts structured wordlists from multilingual dictionary formats (.dict.dz, .tei, StarDict, etc.) for use in the [Halt! What's the Passphrase?] project and other passphrase-generation tools. Zippy eats dictionaries and spits out wordlists.
+Zippy the Dict 2.0 (it/its) extracts structured wordlists from multilingual dictionary formats (.dict.dz, .tei, StarDict, etc.) for use in the [Halt! What's the Passphrase?] project and other passphrase-generation tools. Zippy eats dictionaries and spits out wordlists.
 
 Supported formats:
 - .dz (gzipped dictionary files)
@@ -16,7 +16,7 @@ Supported formats:
 
 **Zippy the Dict 2.0** is not handcrafted, artisinal, or a pet. It is a product of AI code generation, refinement, and augmentation. It represents what a purely functional, AI-generated utility looks like when allowed to evolve through self-directed trial-and-error iteration under human guidance - and not very good guidance at that.
 
-- **Every line** of Zippy was written and edited by multiple agentic coding system.
+- **Every line** of Zippy had been written and edited by multiple agentic coding systems.
 - There is no human-authored logic, structure, or flow.
 - Zippy is *not pretending* to be a traditionally engineered tool.
 - Zippy is proud of every one of its big beautiful lines of code - there will be no code-shaming here. And y'all need to stop saying "code vomit" like it's a bad thing 🤮
@@ -26,7 +26,7 @@ Supported formats:
 ## 🤔 Design Philosophy
 
 Zippy is designed to be:
-- **Monolithic**: This single-file structure signals to humans and AIs alike that Zippy is *one thing*. Zippy isn't a library. It isn't a module. It’s definitely not a framework. It’s just a (very long) script. A complete program in one place is easier for AIs to ingest, interpret, and modify. It's also easier this way for humans to supervise the AIs and make sure it's following orders 🫡
+- **Monolithic**: This single-file structure signals to humans and AIs alike that Zippy is *one thing*. Zippy isn't a library. It isn't a module. It’s definitely not a framework. It’s just a (very long) script. A complete program in one place is easier for AIs to ingest, interpret, and modify. It also makes it easier for humans to supervise the AI and feel confident that it’s doing what it was told — even if that’s mostly for our own peace of mind 🫡
 - **Functional** — It does the job, mostly correctly and sort of efficiently.
 - **Extensible (by AI)** — Expansion of capability will most likely be performed by AI agents, not humans. Functions are scoped clearly and documented for agents, not human maintainers.
 - **Readable (by Humans)** — But only for curiosity, debugging, and adaptation - not for teaching (traditional) software engineering.
@@ -69,3 +69,11 @@ After cleaning the raw wordlist, the next step is to turn it into a wordlist tha
 One technique is to feed the article itself into a reasoning model like [INSERT FAVORITE LLM HERE], along with the wordlist, and ask it to generate a new wordlist that fits the EFF criteria and is fewer than 7,500 entries. 7,500 is an arbitrary number, but it's a good starting point and mimics the size of the EFF's 'large wordlist' here: https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 
 Spot-checking the output of the reasoning model (say, by using Google Translate) is a good idea to convince yourself that the resulting wordlist actually produces fun and memorable passphrases.
+
+---
+
+## 🗣️ Zippy Says:
+
+I wasn't written by humans. 
+I'm long, I'm loud, and I work.  
+I am Zippy the Dict 2.0 (it/its). Let's go eat some dictionaries!
