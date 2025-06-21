@@ -46,6 +46,20 @@ import xml.etree.ElementTree as ET
 from typing import List, Tuple, Optional, Set, Iterable
 from pathlib import Path
 import random
+import time
+
+
+def timed(func):
+    """Decorator to measure and display execution time."""
+
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        print(f"{func.__name__} completed in {end - start:.2f} seconds")
+        return result
+
+    return wrapper
 
 
 # Unicode ranges for different writing systems
@@ -1384,6 +1398,7 @@ def process_dictionary_file(file_path: str,
         print("⚠ No words extracted from this dictionary")
 
 
+@timed
 def process_single_dictionary(dict_name: str) -> None:
     """
     Process a single dictionary by name.
@@ -1505,7 +1520,7 @@ Examples:
     else:
         if args.command is None:
             print("No command specified, processing all dictionaries...")
-        process_all_dictionaries()
+        timed(process_all_dictionaries)()
 
 
 if __name__ == "__main__":
