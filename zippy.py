@@ -38,6 +38,7 @@ Another idea is to not use dictionaries at all - instead, use the AI tools avail
 import argparse
 import gzip
 import os
+import logging
 import re
 import string
 import tarfile
@@ -60,6 +61,10 @@ def timed(func):
         return result
 
     return wrapper
+
+logger = logging.getLogger("zippy")
+logging.basicConfig(format="%(message)s")
+logger.setLevel(logging.WARNING)
 
 
 # Unicode ranges for different writing systems
@@ -1156,7 +1161,7 @@ def extract_words_from_stardict(stardict_dir: str,
         # For StarDict files with invalid offsets, also extract headwords directly from index
         # This recovers words that have corrupted offset data but valid headwords
         if len(entries) < pos // 12:  # Rough estimate - if we lost too many entries
-            print("StarDict offset issues detected, extracting from index directly...")
+            logger.debug("StarDict offset issues detected, extracting from index directly...")
             existing_words = {w for w, d in entries}  # Use set for O(1) lookup
             pos = 0
             direct_words = 0
@@ -1377,7 +1382,7 @@ def process_dictionary_file(file_path: str,
         target_words, _ = extract_words_from_stardict(file_path, "target")
     
     else:
-        print(f"Unsupported file format: {file_path}")
+        logger.error(f"Unsupported file format: {file_path}")
         return
     
     # Save extracted words and get counts
@@ -1386,16 +1391,16 @@ def process_dictionary_file(file_path: str,
     
     # Display results in user-friendly format
     if source_count > 0:
-        print(f"✓ {source_lang.title()}: {source_count:,} words → {source_output_file}")
+        logger.info(f"✓ {source_lang.title()}: {source_count:,} words → {source_output_file}")
     
     if target_count > 0:
-        print(f"✓ {target_lang.title()}: {target_count:,} words → {target_output_file}")
+        logger.info(f"✓ {target_lang.title()}: {target_count:,} words → {target_output_file}")
     
     if stardict_recovery > 0:
-        print(f"  ↪ Recovered {stardict_recovery:,} words from corrupted StarDict offsets")
+        logger.info(f"  ↪ Recovered {stardict_recovery:,} words from corrupted StarDict offsets")
     
     if source_count == 0 and target_count == 0:
-        print("⚠ No words extracted from this dictionary")
+        logger.warning("⚠ No words extracted from this dictionary")
 
 
 @timed
@@ -1409,7 +1414,7 @@ def process_single_dictionary(dict_name: str) -> None:
     dict_path = os.path.join("dictionaries", dict_name)
     
     if not os.path.exists(dict_path):
-        print(f"Dictionary not found: {dict_path}")
+        logger.error(f"Dictionary not found: {dict_path}")
         return
     
     target_output_file, source_output_file = determine_wordlist_filenames(dict_name)
@@ -1422,11 +1427,11 @@ def process_single_dictionary(dict_name: str) -> None:
     src_lang, tgt_lang = get_language_mapping(dict_name)
 
     # Display header with clear dictionary info
-    print(f"📖 {dict_name}")
+    logger.info(f"📖 {dict_name}")
     
     if dict_path.endswith('.dict.dz'):
         # Direct .dz file processing
-        print(f"   Format: Dictionary (.dz)")
+        logger.info("   Format: Dictionary (.dz)")
         process_dictionary_file(dict_path, source_output_file, target_output_file, src_lang, tgt_lang)
     
     else:
@@ -1436,16 +1441,16 @@ def process_single_dictionary(dict_name: str) -> None:
             
             if extracted_file:
                 if file_type == 'stardict':
-                    print(f"   Format: StarDict (compressed)")
+                    logger.info("   Format: StarDict (compressed)")
                 elif file_type == 'tei':
-                    print(f"   Format: TEI XML")
+                    logger.info("   Format: TEI XML")
                 else:
-                    print(f"   Format: Archive")
+                    logger.info("   Format: Archive")
                     
                 process_dictionary_file(extracted_file, source_output_file, 
                                       target_output_file, src_lang, tgt_lang)
             else:
-                print(f"⚠ Could not extract dictionary from: {dict_path}")
+                logger.error(f"⚠ Could not extract dictionary from: {dict_path}")
 
 
 def process_all_dictionaries() -> None:
@@ -1456,18 +1461,18 @@ def process_all_dictionaries() -> None:
         dict_files = [f for f in os.listdir("dictionaries")
                      if f.endswith(supported_extensions)]
     except OSError:
-        print("Error: Could not access dictionaries folder")
+        logger.error("Error: Could not access dictionaries folder")
         return
     
     if not dict_files:
-        print("No dictionary files found in dictionaries folder")
+        logger.error("No dictionary files found in dictionaries folder")
         return
     
-    print(f"Found {len(dict_files)} dictionary files:")
+    logger.info(f"Found {len(dict_files)} dictionary files:")
     for filename in dict_files:
-        print(f"  - {filename}")
+        logger.info(f"  - {filename}")
     
-    print("-" * 60)
+    logger.info("-" * 60)
     
     success_count = 0
     for dict_file in dict_files:
@@ -1475,11 +1480,11 @@ def process_all_dictionaries() -> None:
             process_single_dictionary(dict_file)
             success_count += 1
         except Exception as e:
-            print(f"Error processing {dict_file}: {e}")
+            logger.error(f"Error processing {dict_file}: {e}")
         finally:
-            print("-" * 60)
+            logger.info("-" * 60)
     
-    print(f"Processed {success_count}/{len(dict_files)} files successfully")
+    logger.info(f"Processed {success_count}/{len(dict_files)} files successfully")
 
 
 def main() -> None:
@@ -1505,15 +1510,26 @@ Examples:
     parser.add_argument('-p', '--pos',
                         nargs='+',
                         help='Space-separated POS tags to include (e.g. -p n v). Default: n adj adv v')
+    parser.add_argument('-v', '--verbose',
+                        action='count',
+                        default=0,
+                        help='Increase verbosity (-v for INFO, -vv for DEBUG)')
     
     args = parser.parse_args()
+
+    if args.verbose >= 2:
+        logger.setLevel(logging.DEBUG)
+    elif args.verbose == 1:
+        logger.setLevel(logging.INFO)
+    else:
+        logger.setLevel(logging.WARNING)
 
     if args.pos:
         POS_FILTERS['include'] = [p.lower() for p in args.pos]
     
     if args.command == 'single':
         if not args.filename:
-            print("Error: filename required for single command")
+            logger.error("Error: filename required for single command")
             parser.print_help()
             return
         process_single_dictionary(args.filename)
