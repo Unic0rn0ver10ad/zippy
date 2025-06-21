@@ -47,6 +47,20 @@ import xml.etree.ElementTree as ET
 from typing import List, Tuple, Optional, Set, Iterable
 from pathlib import Path
 import random
+import time
+
+
+def timed(func):
+    """Decorator to measure and display execution time."""
+
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        print(f"{func.__name__} completed in {end - start:.2f} seconds")
+        return result
+
+    return wrapper
 
 logger = logging.getLogger("zippy")
 logging.basicConfig(format="%(message)s")
@@ -1389,6 +1403,7 @@ def process_dictionary_file(file_path: str,
         logger.warning("⚠ No words extracted from this dictionary")
 
 
+@timed
 def process_single_dictionary(dict_name: str) -> None:
     """
     Process a single dictionary by name.
@@ -1520,8 +1535,8 @@ Examples:
         process_single_dictionary(args.filename)
     else:
         if args.command is None:
-            logger.info("No command specified, processing all dictionaries...")
-        process_all_dictionaries()
+            print("No command specified, processing all dictionaries...")
+        timed(process_all_dictionaries)()
 
 
 if __name__ == "__main__":
