@@ -55,10 +55,13 @@ accepts a space-separated list of POS tags:
     python zippy.py --pos n v        # nouns and verbs only
     python zippy.py --pos n          # nouns only
 
+The ``--pos`` option only works on dictionaries that actually contain POS tags.
+Zippy will tell you whether tags were found when ``-v`` or ``-vv`` is used.
+
 Zippy also has some debug / logging levels you can set like this:
 
-    python zippy.py -v               # show progress messages
-    python zippy.py -vv              # debug output
+    python zippy.py -v               # show progress messages (includes POS tag info)
+    python zippy.py -vv              # debug output (more detail)
 
 Almost all of the dictionaries used in this project are from FreeDict:
 https://freedict.org/downloads/

@@ -33,6 +33,8 @@ One technique is to feed the article itself into a reasoning model like ChatGPT,
 Spot-checking the output of the reasoning model (say, by using Google Translate) is a good idea to convince yourself that the resulting wordlist actually produces fun and memorable passphrases.
 
 Another idea is to not use dictionaries at all - instead, use the AI tools available to translate one of the two EFF wordlists into the desired language. Full disclosure: I haven't tried this yet 🤔
+\n+Verbose modes (-v or -vv) also announce whether a dictionary contains POS tags so that
+agents know if the --pos filter will actually do anything.
 """
 
 import argparse
@@ -105,9 +107,11 @@ def contains_year(line: str) -> bool:
 
 # POS filtering configuration
 POS_FILTERS = {
-    # 'include': ['adv'],  # Only extract NOUNs for testing
-    'include': ['n', 'adj', 'adv', 'v'],  # Only extract these base POS types
-    'skip_plurals': True,  # Skip plural forms when reliably detected
+    # AGENTS.md §3 mandates a single-file design; keep the filter state
+    # simple here for Codex. README.md explains that "--pos" only affects
+    # dictionaries with embedded tags like <n> or <v>.
+    'include': ['n', 'adj', 'adv', 'v'],  # default content words
+    'skip_plurals': True,
 }
 
 # Language-specific filename mappings
@@ -274,6 +278,16 @@ def extract_base_pos_types(pos_tag: str) -> List[str]:
     return found_types
 
 
+def detect_dictionary_has_pos(lines: Iterable[str]) -> bool:
+    """Check a few lines for POS tags."""
+    for i, ln in enumerate(lines):
+        if extract_pos_tags(ln) or '<pos' in ln.lower():
+            return True
+        if i >= 200:
+            break
+    return False
+
+
 def should_include_word_by_pos(line: str, filters: dict) -> bool:
     """
     Determine if a word should be included based on POS filtering.
@@ -291,7 +305,7 @@ def should_include_word_by_pos(line: str, filters: dict) -> bool:
     # Extract POS tags from line
     pos_tags = extract_pos_tags(line)
     if not pos_tags:
-        return True  # No POS tags found, include by default
+        return True  # POS tags missing -> filter inert (README)
     
     # Check if we should skip plurals
     if filters.get('skip_plurals', False):
@@ -1119,10 +1133,14 @@ def extract_words_from_stardict(stardict_dir: str,
             return words, recovered_count
         
         # Read the index file
+        # RUMBA: StarDict uses gzip for the .idx; we load it entirely to avoid
+        # seeking within a compressed stream.
         with gzip.open(idx_file, 'rb') as f:
             idx_data = f.read()
         
         # Read the dictionary data
+        # RUMBA: .dict.dz is gzip-compressed; we read the raw bytes once for
+        # repeated offset lookups during extraction.
         with open(dict_file, 'rb') as f:
             dict_data = f.read()
         
@@ -1298,6 +1316,8 @@ def extract_from_archive(archive_path: str, temp_dir: str) -> Tuple[Optional[str
     """
     try:
         with tarfile.open(archive_path, 'r:xz') as tar:
+            # RUMBA: tarfile handles .tar.xz archives directly; extraction
+            # happens in a temp dir so subsequent steps work with plain files.
             tar.extractall(temp_dir)
         
         # Find the dictionary file
@@ -1346,50 +1366,76 @@ def save_wordlist(words: List[str], output_file: str, language_name: str) -> int
     return len(unique_words)
 
 
-def process_dictionary_file(file_path: str, 
-                           source_output_file: str, 
+def process_dictionary_file(file_path: str,
+                           source_output_file: str,
                            target_output_file: str,
                            source_lang: str,
-                           target_lang: str) -> None:
+                           target_lang: str) -> bool:
     """
     Process a single dictionary file and extract words.
-    
+
     Args:
         file_path: Path to dictionary file
         source_output_file: Output file for source language
         target_output_file: Output file for target language
         source_lang: Source language name
         target_lang: Target language name
+
+    Returns:
+        True if POS tags were detected, False otherwise
     """
     stardict_recovery = 0
+    has_pos_tags = False
 
     if file_path.endswith('.dict.dz'):
         # Read the compressed dictionary only once
+        # RUMBA: gzip.open handles the .dz compression; caching lines here keeps
+        # us from re-decompressing the file on multiple passes.
         with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
             lines = [ln.rstrip('\n') for ln in f]
+        has_pos_tags = detect_dictionary_has_pos(lines)
 
         source_words = extract_words_from_gzip_content(lines, "source", is_dz_file=True)
         target_words = extract_words_from_gzip_content(lines, "target", is_dz_file=True)
     
     elif file_path.endswith('.tei'):
         # Process TEI XML format
+        # Peek into the file for POS hints
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            sample = [next(f, '') for _ in range(200)]
+        has_pos_tags = detect_dictionary_has_pos(sample)
         source_words = extract_words_from_tei_xml(file_path, "source")
         target_words = extract_words_from_tei_xml(file_path, "target")
     
     elif os.path.isdir(file_path):
         # Process StarDict format directory and receive recovery info
+        try:
+            dz_file = next(
+                (os.path.join(file_path, f) for f in os.listdir(file_path)
+                 if f.endswith('.dict.dz')))
+            # RUMBA: StarDict packages a gzipped .dict.dz inside a folder;
+            # sampling a few lines avoids fully decompressing on this pass.
+            with gzip.open(dz_file, 'rt', encoding='utf-8', errors='ignore') as f:
+                sample = [next(f, '') for _ in range(200)]
+            has_pos_tags = detect_dictionary_has_pos(sample)
+        except (StopIteration, OSError):
+            has_pos_tags = False
         source_words, stardict_recovery = extract_words_from_stardict(file_path, "source")
         target_words, _ = extract_words_from_stardict(file_path, "target")
     
     else:
         logger.error(f"Unsupported file format: {file_path}")
-        return
+        return False
     
     # Save extracted words and get counts
     source_count = save_wordlist(source_words, source_output_file, source_lang)
     target_count = save_wordlist(target_words, target_output_file, target_lang)
     
     # Display results in user-friendly format
+    pos_msg = "yes" if has_pos_tags else "no"
+    # Verbosity output requested: indicate POS presence for each dictionary (README)
+    logger.info(f"   POS tags: {pos_msg}")
+
     if source_count > 0:
         logger.info(f"✓ {source_lang.title()}: {source_count:,} words → {source_output_file}")
     
@@ -1401,6 +1447,8 @@ def process_dictionary_file(file_path: str,
     
     if source_count == 0 and target_count == 0:
         logger.warning("⚠ No words extracted from this dictionary")
+
+    return has_pos_tags
 
 
 @timed
@@ -1510,6 +1558,7 @@ Examples:
     parser.add_argument('-p', '--pos',
                         nargs='+',
                         help='Space-separated POS tags to include (e.g. -p n v). Default: n adj adv v')
+    # README clarifies this only filters dictionaries containing POS tags
     parser.add_argument('-v', '--verbose',
                         action='count',
                         default=0,
