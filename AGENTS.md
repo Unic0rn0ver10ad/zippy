@@ -84,6 +84,8 @@ project_root/
 ## 5. Wordlist Generation
 
 1. **Load & Decompress**: Read input file and apply appropriate decompression.
+   * RUMBA: Leave a short inline comment explaining how each archive type is
+     extracted so future agents know which Python modules were used.
 2. **Parse Entries**: Extract word entries and part-of-speech tags.
 3. **Filter**: Retain content words (nouns, verbs, adjectives, adverbs).
 4. **Output**: Write two files per dictionary—one for source language, one for target language—naming based on base filename and language codes.
@@ -93,5 +95,7 @@ project_root/
 * **Default**: Minimal progress output.
 * **`-v`**: Show progress milestones.
 * **`-vv`**: Detailed debug info, including data snapshots and metrics.
+* **POS presence**: Verbose modes must print whether each processed dictionary
+  contains POS tags so agents can gauge if ``--pos`` filtering will apply.
 
 ---
