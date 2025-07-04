@@ -34,6 +34,10 @@ Zippy was designed to be:
 
 ---
 
+## 🕺💃🪩 Zippy is ready to RUMBA!
+
+Zippy is built on a new coding paradigm, RUMBA: Read, Understood, Maintained by Agents. If you've never heard about it before, it's because I invented / discovered it. RUMBA is the future!
+
 ## 🦾 How to Use Zippy 2.0!
 
 All dictionaries must be placed in the 'dictionaries' folder for processing. The extracted wordlists will be saved in the 'wordlists' folder. Each dictionary will generate two wordlists: one for the source language and one for the target language. The filenames are based on the dictionary name and possibly the language codes from LANGUAGE_MAPPINGS.
