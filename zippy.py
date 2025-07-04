@@ -35,6 +35,7 @@ Spot-checking the output of the reasoning model (say, by using Google Translate)
 Another idea is to not use dictionaries at all - instead, use the AI tools available to translate one of the two EFF wordlists into the desired language. Full disclosure: I haven't tried this yet 🤔
 \n+Verbose modes (-v or -vv) also announce whether a dictionary contains POS tags so that
 agents know if the --pos filter will actually do anything.
+Use ``-pe`` to skip English wordlists when English appears in the dictionary.
 """
 
 import argparse
@@ -67,6 +68,9 @@ def timed(func):
 logger = logging.getLogger("zippy")
 logging.basicConfig(format="%(message)s")
 logger.setLevel(logging.WARNING)
+
+# When true, skip English wordlists if a dictionary includes English
+PREFER_ENGLISH = False
 
 
 # Unicode ranges for different writing systems
@@ -1383,9 +1387,15 @@ def process_dictionary_file(file_path: str,
 
     Returns:
         True if POS tags were detected, False otherwise
+
+    Side Effects:
+        Respects the global ``PREFER_ENGLISH`` flag to skip English wordlists
     """
     stardict_recovery = 0
     has_pos_tags = False
+
+    skip_source = PREFER_ENGLISH and source_lang == 'english'
+    skip_target = PREFER_ENGLISH and target_lang == 'english'
 
     if file_path.endswith('.dict.dz'):
         # Read the compressed dictionary only once
@@ -1395,8 +1405,10 @@ def process_dictionary_file(file_path: str,
             lines = [ln.rstrip('\n') for ln in f]
         has_pos_tags = detect_dictionary_has_pos(lines)
 
-        source_words = extract_words_from_gzip_content(lines, "source", is_dz_file=True)
-        target_words = extract_words_from_gzip_content(lines, "target", is_dz_file=True)
+        source_words = [] if skip_source else extract_words_from_gzip_content(
+            lines, "source", is_dz_file=True)
+        target_words = [] if skip_target else extract_words_from_gzip_content(
+            lines, "target", is_dz_file=True)
     
     elif file_path.endswith('.tei'):
         # Process TEI XML format
@@ -1404,8 +1416,10 @@ def process_dictionary_file(file_path: str,
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
             sample = [next(f, '') for _ in range(200)]
         has_pos_tags = detect_dictionary_has_pos(sample)
-        source_words = extract_words_from_tei_xml(file_path, "source")
-        target_words = extract_words_from_tei_xml(file_path, "target")
+        source_words = [] if skip_source else extract_words_from_tei_xml(
+            file_path, "source")
+        target_words = [] if skip_target else extract_words_from_tei_xml(
+            file_path, "target")
     
     elif os.path.isdir(file_path):
         # Process StarDict format directory and receive recovery info
@@ -1420,16 +1434,29 @@ def process_dictionary_file(file_path: str,
             has_pos_tags = detect_dictionary_has_pos(sample)
         except (StopIteration, OSError):
             has_pos_tags = False
-        source_words, stardict_recovery = extract_words_from_stardict(file_path, "source")
-        target_words, _ = extract_words_from_stardict(file_path, "target")
+        source_words, stardict_recovery = ([], 0) if skip_source else \
+            extract_words_from_stardict(file_path, "source")
+        target_words, _ = ([], 0) if skip_target else \
+            extract_words_from_stardict(file_path, "target")
     
     else:
         logger.error(f"Unsupported file format: {file_path}")
         return False
     
-    # Save extracted words and get counts
-    source_count = save_wordlist(source_words, source_output_file, source_lang)
-    target_count = save_wordlist(target_words, target_output_file, target_lang)
+    # Save extracted words unless skipped via PREFER_ENGLISH
+    source_count = 0
+    target_count = 0
+    if not skip_source:
+        source_count = save_wordlist(source_words, source_output_file,
+                                     source_lang)
+    else:
+        logger.info("   Skipping English wordlist (-pe)")
+
+    if not skip_target:
+        target_count = save_wordlist(target_words, target_output_file,
+                                     target_lang)
+    else:
+        logger.info("   Skipping English wordlist (-pe)")
     
     # Display results in user-friendly format
     pos_msg = "yes" if has_pos_tags else "no"
@@ -1437,10 +1464,12 @@ def process_dictionary_file(file_path: str,
     logger.info(f"   POS tags: {pos_msg}")
 
     if source_count > 0:
-        logger.info(f"✓ {source_lang.title()}: {source_count:,} words → {source_output_file}")
-    
+        logger.info(
+            f"✓ {source_lang.title()}: {source_count:,} words → {source_output_file}")
+
     if target_count > 0:
-        logger.info(f"✓ {target_lang.title()}: {target_count:,} words → {target_output_file}")
+        logger.info(
+            f"✓ {target_lang.title()}: {target_count:,} words → {target_output_file}")
     
     if stardict_recovery > 0:
         logger.info(f"  ↪ Recovered {stardict_recovery:,} words from corrupted StarDict offsets")
@@ -1563,6 +1592,9 @@ Examples:
                         action='count',
                         default=0,
                         help='Increase verbosity (-v for INFO, -vv for DEBUG)')
+    parser.add_argument('-pe', '--prefer-english',
+                        action='store_true',
+                        help='Skip English wordlists when English is present')
     
     args = parser.parse_args()
 
@@ -1572,6 +1604,9 @@ Examples:
         logger.setLevel(logging.INFO)
     else:
         logger.setLevel(logging.WARNING)
+
+    global PREFER_ENGLISH
+    PREFER_ENGLISH = args.prefer_english
 
     if args.pos:
         POS_FILTERS['include'] = [p.lower() for p in args.pos]

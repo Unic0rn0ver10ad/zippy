@@ -57,6 +57,7 @@ accepts a space-separated list of POS tags:
 
 The ``--pos`` option only works on dictionaries that actually contain POS tags.
 Zippy will tell you whether tags were found when ``-v`` or ``-vv`` is used.
+Use ``-pe`` to skip the English wordlist when a dictionary includes English. Dictionaries without English still produce two wordlists.
 
 Zippy also has some debug / logging levels you can set like this:
 
