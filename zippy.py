@@ -46,6 +46,7 @@ import re
 import string
 import tarfile
 import tempfile
+import unicodedata
 import xml.etree.ElementTree as ET
 from typing import List, Tuple, Optional, Set, Iterable
 from pathlib import Path
@@ -344,12 +345,23 @@ def is_valid_word(word: str) -> bool:
     Returns:
         True if word is valid, False otherwise
     """
-    if not word or len(word) < 3:
+    if not word:
         return False
-    
+
     # Remove leading/trailing whitespace
     word = word.strip()
-    if not word or len(word) < 3:
+    if not word:
+        return False
+
+    # Determine minimum length based on script
+    if contains_cjk(word):
+        min_len = 1
+    elif any(contains_script(word, s) for s in ['devanagari', 'arabic', 'cyrillic']):
+        min_len = 2
+    else:
+        min_len = 3
+
+    if len(word) < min_len:
         return False
     
     # Skip common technical abbreviations and fragments
@@ -359,8 +371,18 @@ def is_valid_word(word: str) -> bool:
     # Skip words that are mostly punctuation or numbers
     if sum(c.isalnum() for c in word) < len(word) * 0.6:
         return False
-    
-    return all(char.isalnum() or char.isspace() or char in "'-áàâäéèêëíìîïóòôöúùûüýÿñçłśźżąęćńłžčšđ" for char in word)
+
+    allowed = "'-áàâäéèêëíìîïóòôöúùûüýÿñçłśźżąęćńłžčšđ"
+    for char in word:
+        if char.isalnum() or char.isspace():
+            continue
+        if unicodedata.category(char).startswith('M'):
+            continue
+        if char in allowed:
+            continue
+        return False
+
+    return True
 
 
 def is_script_character(char: str, script: str) -> bool:
@@ -1142,11 +1164,11 @@ def extract_words_from_stardict(stardict_dir: str,
         with gzip.open(idx_file, 'rb') as f:
             idx_data = f.read()
         
-        # Read the dictionary data
-        # RUMBA: .dict.dz is gzip-compressed; we read the raw bytes once for
-        # repeated offset lookups during extraction.
+        # Read and decompress the dictionary data
+        # RUMBA: StarDict packages a gzipped .dict file. We load it fully so
+        # offset lookups work on the uncompressed bytes.
         with open(dict_file, 'rb') as f:
-            dict_data = f.read()
+            dict_data = gzip.decompress(f.read())
         
         # Parse index entries
         pos = 0
@@ -1176,9 +1198,13 @@ def extract_words_from_stardict(stardict_dir: str,
                     actual_size = min(size, len(dict_data) - offset)
                     definition = dict_data[offset:offset+actual_size].decode('utf-8', errors='ignore')
                     entries.append((word, definition))
-                
+
             except (UnicodeDecodeError, struct.error):
                 continue
+
+        # Detect the predominant script used in definitions
+        sample_lines = [d for _, d in entries[:500]]
+        target_script = detect_target_language_script(sample_lines)
         
         # For StarDict files with invalid offsets, also extract headwords directly from index
         # This recovers words that have corrupted offset data but valid headwords
@@ -1223,12 +1249,18 @@ def extract_words_from_stardict(stardict_dir: str,
                 if is_valid_word(cleaned_word):
                     words.append(cleaned_word)
             else:
-                # Target words: StarDict format uses compressed binary data that requires
-                # specialized libraries to decode properly. Since we can't reliably extract
-                # English definitions without proper StarDict parsing libraries, we'll
-                # create a minimal wordlist with common English words that would typically
-                # appear in an Icelandic-English dictionary context.
-                pass  # Skip English extraction for StarDict format
+                # Target words are found within the HTML-formatted definition
+                text = re.sub(r'<[^>]+>', ' ', definition)
+                for t in process_multilingual_translation(text):
+                    if target_script in ['arabic', 'cyrillic', 'devanagari', 'cjk']:
+                        if target_script == 'cjk':
+                            if not contains_cjk(t):
+                                continue
+                        else:
+                            if not contains_script(t, target_script):
+                                continue
+                    if is_valid_word(t):
+                        words.append(t)
     
     except (OSError, struct.error, UnicodeDecodeError):
         pass
