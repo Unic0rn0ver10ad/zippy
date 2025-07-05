@@ -1253,7 +1253,6 @@ def extract_words_from_stardict(stardict_dir: str,
                 text = re.sub(r'<[^>]+>', ' ', definition)
                 for t in process_multilingual_translation(text):
                     if target_script in ['arabic', 'cyrillic', 'devanagari', 'cjk']:
-codex/diagnose-zippy-failure-to-extract-words-from-dictionary
                         if target_script == 'cjk':
                             if not contains_cjk(t):
                                 continue
