@@ -4,3 +4,5 @@
     [ ] If there are duplicates just add a 2 or 3 etc. to the end.
     [ ] Add the total number of words (lines) into the name as another option
 [ ] Improve StarDict processing - decompress .dict.dz and parse HTML definitions
+[ ] Handle combining marks in is_valid_word for scripts like Devanagari
+[ ] Allow short words for CJK scripts when validating

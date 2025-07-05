@@ -46,6 +46,7 @@ import re
 import string
 import tarfile
 import tempfile
+import unicodedata
 import xml.etree.ElementTree as ET
 from typing import List, Tuple, Optional, Set, Iterable
 from pathlib import Path
@@ -344,12 +345,23 @@ def is_valid_word(word: str) -> bool:
     Returns:
         True if word is valid, False otherwise
     """
-    if not word or len(word) < 3:
+    if not word:
         return False
-    
+
     # Remove leading/trailing whitespace
     word = word.strip()
-    if not word or len(word) < 3:
+    if not word:
+        return False
+
+    # Determine minimum length based on script
+    if contains_cjk(word):
+        min_len = 1
+    elif any(contains_script(word, s) for s in ['devanagari', 'arabic', 'cyrillic']):
+        min_len = 2
+    else:
+        min_len = 3
+
+    if len(word) < min_len:
         return False
     
     # Skip common technical abbreviations and fragments
@@ -359,8 +371,18 @@ def is_valid_word(word: str) -> bool:
     # Skip words that are mostly punctuation or numbers
     if sum(c.isalnum() for c in word) < len(word) * 0.6:
         return False
-    
-    return all(char.isalnum() or char.isspace() or char in "'-áàâäéèêëíìîïóòôöúùûüýÿñçłśźżąęćńłžčšđ" for char in word)
+
+    allowed = "'-áàâäéèêëíìîïóòôöúùûüýÿñçłśźżąęćńłžčšđ"
+    for char in word:
+        if char.isalnum() or char.isspace():
+            continue
+        if unicodedata.category(char).startswith('M'):
+            continue
+        if char in allowed:
+            continue
+        return False
+
+    return True
 
 
 def is_script_character(char: str, script: str) -> bool:
@@ -1231,8 +1253,13 @@ def extract_words_from_stardict(stardict_dir: str,
                 text = re.sub(r'<[^>]+>', ' ', definition)
                 for t in process_multilingual_translation(text):
                     if target_script in ['arabic', 'cyrillic', 'devanagari', 'cjk']:
-                        if not contains_script(t, target_script):
-                            continue
+codex/diagnose-zippy-failure-to-extract-words-from-dictionary
+                        if target_script == 'cjk':
+                            if not contains_cjk(t):
+                                continue
+                        else:
+                            if not contains_script(t, target_script):
+                                continue
                     if is_valid_word(t):
                         words.append(t)
     
