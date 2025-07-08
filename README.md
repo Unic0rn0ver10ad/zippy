@@ -63,6 +63,7 @@ The ``--pos`` option only works on dictionaries that actually contain POS tags.
 Zippy will tell you whether tags were found when ``-v`` or ``-vv`` is used.
 Use ``-pe`` to skip the English wordlist when a dictionary includes English. Dictionaries without English still produce two wordlists.
 When processing FreeDict archives in either mode, Zippy shows the detected license for each dictionary.
+When running ``process-all`` a ``licenses.md`` file summarizing each dictionary's license is created automatically.
 
 Zippy also has some debug / logging levels you can set like this:
 

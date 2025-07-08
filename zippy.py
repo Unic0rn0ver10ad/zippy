@@ -73,6 +73,38 @@ logger.setLevel(logging.WARNING)
 # When true, skip English wordlists if a dictionary includes English
 PREFER_ENGLISH = False
 
+# Rows collected for licenses.md generation
+LICENSE_TABLE_ROWS: List[Tuple[str, str, str]] = []
+# Internal flag to avoid printing the license table header multiple times
+_LICENSE_HEADER_SHOWN = False
+
+
+def _print_license_header() -> None:
+    """Display the license table header once when verbose output is enabled."""
+    global _LICENSE_HEADER_SHOWN
+    if logger.isEnabledFor(logging.INFO) and not _LICENSE_HEADER_SHOWN:
+        logger.info("| File | Source | License Info |")
+        logger.info("| ---- | ------ | ------------ |")
+        _LICENSE_HEADER_SHOWN = True
+
+
+def _log_license_row(out_file: str, source: str, license_text: str) -> None:
+    """Log a single license table row."""
+    license_text = license_text.replace("\n", " ").strip()
+    logger.info(f"| `{out_file}` | {source} | {license_text} |")
+
+
+def write_license_file(rows: List[Tuple[str, str, str]]) -> None:
+    """Write collected license rows to licenses.md."""
+    if not rows:
+        return
+    with open("licenses.md", "w", encoding="utf-8") as f:
+        f.write("| File | Source | License Info |\n")
+        f.write("| ---- | ------ | ------------ |\n")
+        for out_file, src, lic in rows:
+            lic = lic.replace("\n", " ").strip()
+            f.write(f"| `{out_file}` | {src} | {lic} |\n")
+
 
 # Unicode ranges for different writing systems
 UNICODE_RANGES = {
@@ -1454,7 +1486,7 @@ def process_dictionary_file(file_path: str,
                            source_output_file: str,
                            target_output_file: str,
                            source_lang: str,
-                           target_lang: str) -> bool:
+                           target_lang: str) -> Tuple[bool, int, int]:
     """
     Process a single dictionary file and extract words.
 
@@ -1466,7 +1498,7 @@ def process_dictionary_file(file_path: str,
         target_lang: Target language name
 
     Returns:
-        True if POS tags were detected, False otherwise
+        Tuple of (pos_tags_detected, source_count, target_count)
 
     Side Effects:
         Respects the global ``PREFER_ENGLISH`` flag to skip English wordlists
@@ -1557,7 +1589,7 @@ def process_dictionary_file(file_path: str,
     if source_count == 0 and target_count == 0:
         logger.warning("⚠ No words extracted from this dictionary")
 
-    return has_pos_tags
+    return has_pos_tags, source_count, target_count
 
 
 @timed
@@ -1589,12 +1621,13 @@ def process_single_dictionary(dict_name: str) -> None:
     if dict_path.endswith('.dict.dz'):
         # Direct .dz file processing
         logger.info("   Format: Dictionary (.dz)")
-        lic = extract_license_text(dict_path, 'dict')
-        if lic:
-            logger.info(f"   License: {lic}")
-        else:
-            logger.info("   License: unknown")
-        process_dictionary_file(dict_path, source_output_file, target_output_file, src_lang, tgt_lang)
+        lic = extract_license_text(dict_path, 'dict') or "unknown"
+        logger.info(f"   License: {lic}")
+        pos_found, src_ct, tgt_ct = process_dictionary_file(
+            dict_path, source_output_file, target_output_file, src_lang, tgt_lang)
+        LICENSE_TABLE_ROWS.append((os.path.basename(target_output_file), dict_name, lic))
+        _print_license_header()
+        _log_license_row(os.path.basename(target_output_file), dict_name, lic)
 
     else:
         # Archive processing
@@ -1609,14 +1642,13 @@ def process_single_dictionary(dict_name: str) -> None:
                 else:
                     logger.info("   Format: Archive")
 
-                lic = extract_license_text(extracted_file, file_type)
-                if lic:
-                    logger.info(f"   License: {lic}")
-                else:
-                    logger.info("   License: unknown")
-
-                process_dictionary_file(extracted_file, source_output_file,
-                                      target_output_file, src_lang, tgt_lang)
+                lic = extract_license_text(extracted_file, file_type) or "unknown"
+                logger.info(f"   License: {lic}")
+                pos_found, src_ct, tgt_ct = process_dictionary_file(
+                    extracted_file, source_output_file, target_output_file, src_lang, tgt_lang)
+                LICENSE_TABLE_ROWS.append((os.path.basename(target_output_file), dict_name, lic))
+                _print_license_header()
+                _log_license_row(os.path.basename(target_output_file), dict_name, lic)
             else:
                 logger.error(f"⚠ Could not extract dictionary from: {dict_path}")
 
@@ -1651,8 +1683,10 @@ def process_all_dictionaries() -> None:
             logger.error(f"Error processing {dict_file}: {e}")
         finally:
             logger.info("-" * 60)
-    
+
     logger.info(f"Processed {success_count}/{len(dict_files)} files successfully")
+
+    write_license_file(LICENSE_TABLE_ROWS)
 
 
 def main() -> None:
