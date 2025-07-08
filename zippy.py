@@ -1375,8 +1375,56 @@ def extract_from_archive(archive_path: str, temp_dir: str) -> Tuple[Optional[str
     
     except (tarfile.TarError, OSError):
         pass
-    
+
     return None, None
+
+
+def extract_license_text(path: str, file_type: str) -> Optional[str]:
+    """Return license text for a dictionary if found.
+
+    Args:
+        path: Path to dictionary file or directory
+        file_type: One of 'dict', 'stardict', or 'tei'
+
+    Returns:
+        License text string, or None if not detected
+    """
+    try:
+        if file_type == 'dict':
+            # Read a small portion of the .dict.dz header for "Availability" info
+            with gzip.open(path, 'rt', encoding='utf-8', errors='ignore') as f:
+                lines = [next(f, '') for _ in range(40)]
+            found = False
+            for line in lines:
+                if 'Availability:' in line:
+                    found = True
+                elif found and 'licen' in line.lower():
+                    return line.strip()
+
+        elif file_type == 'stardict':
+            # Locate .ifo file beside the .dict.dz and read description
+            ifo = next((f for f in os.listdir(path) if f.endswith('.ifo')), None)
+            if ifo:
+                with open(os.path.join(path, ifo), 'r', encoding='utf-8',
+                          errors='ignore') as f:
+                    for line in f:
+                        if line.startswith('description='):
+                            text = line.split('=', 1)[1].strip()
+                            text = re.sub(r'<[^>]+>', '', text)
+                            if 'licen' in text.lower():
+                                return text
+
+        elif file_type == 'tei':
+            tree = ET.parse(path)
+            root = tree.getroot()
+            lic = root.find('.//{*}licence')
+            if lic is not None and lic.text:
+                return lic.text.strip()
+
+    except Exception:
+        pass
+
+    return None
 
 
 def save_wordlist(words: List[str], output_file: str, language_name: str) -> int:
@@ -1537,12 +1585,17 @@ def process_single_dictionary(dict_name: str) -> None:
 
     # Display header with clear dictionary info
     logger.info(f"📖 {dict_name}")
-    
+
     if dict_path.endswith('.dict.dz'):
         # Direct .dz file processing
         logger.info("   Format: Dictionary (.dz)")
+        lic = extract_license_text(dict_path, 'dict')
+        if lic:
+            logger.info(f"   License: {lic}")
+        else:
+            logger.info("   License: unknown")
         process_dictionary_file(dict_path, source_output_file, target_output_file, src_lang, tgt_lang)
-    
+
     else:
         # Archive processing
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1555,8 +1608,14 @@ def process_single_dictionary(dict_name: str) -> None:
                     logger.info("   Format: TEI XML")
                 else:
                     logger.info("   Format: Archive")
-                    
-                process_dictionary_file(extracted_file, source_output_file, 
+
+                lic = extract_license_text(extracted_file, file_type)
+                if lic:
+                    logger.info(f"   License: {lic}")
+                else:
+                    logger.info("   License: unknown")
+
+                process_dictionary_file(extracted_file, source_output_file,
                                       target_output_file, src_lang, tgt_lang)
             else:
                 logger.error(f"⚠ Could not extract dictionary from: {dict_path}")
