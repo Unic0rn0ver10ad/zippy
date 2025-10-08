@@ -3,7 +3,7 @@
 
 ## 🎯 Zippy 2.0 Has A Purpose!
 
-Zippy 2.0 (it/its) extracts structured wordlists from several different dictionary formats for use in the [Halt! What's the Passphrase?] project and other passphrase-generation tools. Zippy eats dictionaries and spits out wordlists.
+Zippy 2.0 (it/its) extracts structured wordlists from several different dictionary formats for use in the [Halt! What's the Passphrase?](https://github.com/Unic0rn0ver10ad/halt-whats-the-passphrase) project and other passphrase-generation tools. Zippy eats dictionaries and spits out wordlists.
 
 Supported formats:
 - .dz (gzipped dictionary files)
