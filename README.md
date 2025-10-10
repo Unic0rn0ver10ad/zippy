@@ -1,8 +1,8 @@
 # 🤖 Zippy 2.0 Is Here!
 
-<img src="Zippy2.png" alt="Meet Zippy 2.0!" width="300">
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+<img src="Zippy2.png" alt="Meet Zippy 2.0!" width="300">
 
 ## 🎯 Zippy 2.0 Has A Purpose!
 
