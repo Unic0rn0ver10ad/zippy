@@ -1,0 +1,2202 @@
+Derived from resources of the Apertium project
+O'Regan
+WITHOUT ANY WARRANTY; without even the implied warranty of
+a arraïtz de
+a bord
+a ca meva
+a ca nostra
+a ca seva
+a ca teva
+a ca vostra
+a can
+a cargue de
+a casa
+a casa meua
+a casa meva
+a casa nostra
+a casa seua
+a casa seva
+a casa teua
+a casa teva
+a casa vostra
+a causa de
+a cinc oras
+a compdar d'alavetz
+a compdar de
+a comptar d'alavetz
+a comptar de
+a contracòr
+a deman
+a despart
+a despiet
+a despiet de
+a doas oras
+a dotze oras
+a dètz oras
+a excepcion de
+a fauta de
+a franquejar en destinació
+a ieu
+a ièu
+a jo
+a l'encòp
+a l'entorn
+a l'escasença de
+a l'escola
+a l'església
+a l'excepcion de
+a l'interior
+a l'ora d'ara
+a la carga de
+a la fin
+a la primeria
+a la vegada
+a lèu
+a malgrat
+a maugrat
+a mesura que
+a nòu oras
+a on
+a onze oras
+a part
+a partir de
+a petició de
+a posita
+a primers
+a principis
+a principis d'any
+a pèces
+a quatre oras
+a qué
+a raïtz de
+a sièis oras
+a sèt oras
+a totara
+a trauèrs de
+a trauès de
+a travèrs de
+a tres oras
+a una ora
+a uèch oras
+a uèit oras
+a vegades
+abans
+abans de
+abans-ièr
+abant
+abantes
+aberrant
+abestit
+abissal
+abjècte
+abondiu
+abrutit
+absent
+absolutament
+absurd
+ac
+academic
+acceptablament
+acceptablaments
+accessible
+accidental
+accidentalment
+acid
+acitau
+aciu
+acomiadar
+activament
+actual
+actualament
+actuaument
+actuauments
+acusament
+ací
+acústic
+addicional
+addicte
+adequadament
+adient
+adieu
+adishatz
+adiu
+adjunt
+adés
+aerian
+aeroportuari
+afirmativament
+afortunadament
+ager
+agotable
+agradable
+agricola
+agricòla
+agroalimentari
+aguest
+aguest maitin
+aiceste
+aiciu
+aicí
+ailà
+aital
+així com
+aiçò
+al bòrd
+al bòrd de
+al cap d'un an
+al cors de
+al costat de
+al còp que ben
+al darrièr
+al dedins
+al luòc de
+al lòc de
+al mercat
+al mitan
+al profièch
+al pus mai
+al revèrs
+alai
+alara
+alavetz
+alemand
+alfabetic
+alhora
+alièn
+alloc de
+allà baix
+allà dalt
+almens
+alpin
+alt
+alternativament
+alèra
+amable
+amarg
+amassa
+amassa amb
+amassa damb
+amatent
+amb
+amb ieu
+amb ièu
+amb jo
+amb mai de
+amb prou feines
+amb relació a
+ambdús
+ambe
+ambedós
+ambiental
+amiar
+amistós
+ampli
+amunt
+analgesic
+anar
+anautit
+ancestral
+ancian
+andalós
+andocien
+andús
+anecdoticament
+anecdoticaments
+anella
+anet
+anglés
+anonciar
+antan
+anteriorament
+anterioraments
+antiaerian
+antidemocràtic
+antimilitarista
+antisistema
+antitransgenic
+antropològic
+anual
+anualment
+anuèch
+any rere any
+anòmal
+anònim
+aparentament
+aparentaments
+aperaquí
+apropiadament
+aproximadament
+aproximadaments
+aprèp
+après
+apròp
+apuprètz
+aquatic
+aquel
+aquerò
+aquerò d'aquiu delà
+aqueste
+aqueth
+aqueth d'aquiu delà
+aquital
+aquiu
+aquiu delà
+aquí
+aquí sobre
+aquí sota
+aquò
+aquò òc
+ara fin
+ara ora d'ara
+arab
+araiguan
+aranesista
+aranès
+arderós
+ardit
+argaròt
+argumental
+arqueològic
+arran
+arren
+arreu
+arribar i moldre
+arridolent
+arridolèr
+arrés
+artesan
+artesanal
+artificial
+arunan
+asimetric
+assistencial
+assistenciau
+assolelhat
+atal
+atanben
+atau
+atent
+atentaments
+ath bòrd de
+ath cant de
+ath cap d'un an
+ath costat
+ath costat de
+ath còp
+ath darrèr
+ath delà
+ath delà d'açò
+ath delà de
+ath laguens
+ath long de
+ath madeish temps
+ath madeish viatge
+ath miei
+ath revèrs
+ath temps
+ath torn
+atletic
+atlàntic
+atomic
+atèu
+audiovisual
+auer
+aumens
+aupin
+auriòu
+australià
+austríac
+autan
+autanplan
+autant
+autoctòn
+automàtic
+automàticament
+autonòmic
+autèntic
+aué
+avall
+avant
+aver
+aviari
+aviat
+avui
+avui en dia
+açò
+açò òc
+aürós
+bacterian
+baish
+baishmedievau
+baix
+balcànic
+balhar
+banal
+bancari
+baraire
+barbar
+barceloniste
+bas
+basilical
+basilicau
+basmedieval
+belga
+ben
+beneit
+benlèu
+besson
+biannal
+biannau
+biologic
+bioquimic
+birman
+blanc
+blaugrana
+boig
+bon
+botar
+brasilian
+bric
+brica
+brillant
+brivall
+brun
+brutal
+brutau
+brèvament
+brèvaments
+budgetari
+burleta
+bàsicament
+bèra causa
+bèth
+bèth temps a
+bèth un
+bòrd
+ca meua
+ca meva
+ca nostra
+ca seva
+ca teva
+ca vostra
+cada cop menys
+cada cop més
+cada còp que
+cada vegada
+cada vegada menys
+cada vegada més
+cada viatge que
+cadastral
+cadun
+cal·ligàfic
+cambiar
+candid
+candidat
+canonic
+cap de
+capable
+capaç
+capdavanter
+característic
+cardinal
+carregar
+casa
+casa meua
+casa meva
+casa nostra
+casa seua
+casa seva
+casa teua
+casa teva
+casa vostra
+català
+caud
+caòtic
+ce
+celibatari
+celtic
+central
+certan
+científic
+cinematografic
+clandestin
+clarament
+classic
+clau
+clinic
+coherent
+colloquial
+colloquiau
+colossal
+com
+com a
+com ara
+coma maximom
+comarcal
+combatent
+comercial
+comissió
+compatible
+competencial
+competir
+complet
+completament
+completaments
+complèt
+complètament
+complètaments
+complèx
+comprensible
+compte
+comtal
+comtau
+comunal
+conceptual
+concretament
+concrètament
+concrètaments
+condemnatòri
+confús
+conjonch
+conjuntament
+conjuntaments
+conscient
+consegüent
+conservador
+considerablement
+consistent
+constantament
+constantaments
+constar
+constitucional
+constituent
+constitutiu
+continental
+contingent
+continu
+continualament
+continualaments
+contractual
+contradictòri
+contributions are welcome
+contràriament
+contràriaments
+contunh
+convencional
+convenent
+convenientment
+convergent
+conversacional
+conéisser
+cooficial
+cooficiau
+corean
+coreferent
+coriós
+corporal
+corporatiu
+corrector
+corrent
+correspondent
+correspondre
+corresponent
+correspóner
+corromput
+corrèctament
+corrèctaments
+corrècte
+cossent a
+cossent damb
+cossent tamb
+costerut
+costièr
+creient
+creigui ben
+creixent
+cresi ben
+crestian
+criptic
+cristian
+cronològic
+cru
+crucial
+cruciau
+crudèl
+crusèl
+cuban
+culturalment
+curiosament
+curiosaments
+curricular
+cutani
+cèrt
+cèrtament
+cèrtaments
+cívic
+còntra
+còp
+córrer
+d'abòrd que
+d'aquí a
+d'ara enlà
+d'autra banda
+d'ora
+d'ua auta faiçon
+d'un biais important
+d'una autra faiçon
+d'èsser atau
+d'èster atau
+dab
+daissar
+damb
+damb era ocasion de
+damb mès de
+damb ocasion de
+dançaire
+dapasset
+dar
+darrer
+darrere
+darrièrament
+darrèrament
+darrèraments
+dauant
+dauridament
+dauridaments
+daurit
+davant
+de besonh
+de cap e tot
+de contunh
+de franc
+de gaireben
+de ieu
+de ièu
+de jo
+de la part de
+de longa
+de lèu
+de mai
+de manera semblant
+de nonent
+de pas
+de passatge
+de qualque biais
+de quasi
+de quauque biais
+de sòrta que
+de tota manera
+de totes maneres
+de vegades
+de vertat
+decreixent
+dedins
+deficient
+definitivament
+defòra
+degradant
+degudaments
+degun
+dehòra
+deishar
+deixar
+dejà
+dejós
+dejós de
+del temps que
+delirant
+dels estudis
+delà
+delàger
+delànet
+deman
+demest
+democràtic
+demogràfic
+demont
+demont de
+demorar
+dempuèi
+dempuòi
+dempús
+dempús de
+denquia
+dental
+departamental
+dependent
+depès
+desempuèi
+desen
+desespuèi
+desfavorable
+desfavorit
+deslleial
+desmanyotat
+desparièr
+despectiu
+despuèi
+despuòi
+despús
+despús de
+dessenhaire
+dessús
+dessús de
+desvolopar
+detalhadament
+detalhadaments
+deth temps que
+deuant
+devant
+devèrs
+devòt
+diacrític
+diagonal
+diagonau
+dialectal
+diatònic
+didàctic
+diferencial
+dificil
+dificilament
+dificilaments
+digital
+dignament
+dilhèu
+dinc
+dinca
+dins
+dins de
+dins de condicions
+dins la majoritat de
+dins lo cas de
+dinàmic
+dire
+directe
+dirèctament
+dirèctaments
+discogràfic
+disparièr
+diuèrs
+divers
+divèrs
+dobertament
+doble
+dobèrt
+doctoral
+dolent
+dolorós
+dolçament
+domiciliari
+domètge
+donar
+donc
+doncas
+doncas que
+donques
+donques que
+doç
+dubèrt
+durament
+duraments
+durant
+dusca
+duscas
+dètz
+díder
+e
+e mai
+e mai que
+e mai se
+eca
+ecològic
+economic
+economicament
+economicaments
+editorial
+efectivament
+efeminat
+eficient
+egalitari
+egiptologic
+ei a díder
+ei cèrt
+el
+el que
+electe
+electoral
+electrònic
+elegant
+elemental
+eliminatòri
+elitista
+emai
+emb
+embe
+emblematic
+emergent
+emocional
+empresarial
+en
+en bèra sorta
+en cas de
+en centre vila
+en direccion cap
+en direccion entà
+en favor
+en general
+en luòc de
+en lòc de
+en mai
+en mai d'aquò
+en mai de
+en menor mesura
+en ocasion de
+en part
+en partida
+en plaça de
+en pèças
+en rason de
+en relació a
+en seguida de
+en un principi
+en via de
+en çò que tanh
+en çò que tanh a
+ena escadença de
+ena fòto
+ena majoria de
+encara non
+encís
+endacòm
+endins
+endogamic
+energètic
+enfin
+engrescador
+enguan
+enllà
+enlà
+enlòc
+enorme
+enormement
+enquera
+enquia
+enquia ara
+enquia que
+enquèra
+enqüèra
+enreire
+enrè
+ensajar
+enta
+entad
+entad aiçò qu'ei a
+entad aiçò que tanh
+entad açò qu'ei a
+entad açò que tanh
+enter
+entièrament
+entièraments
+entremig
+entrò
+entrò a
+entà
+entà deman
+entà dempús
+entà despús
+entà ieu
+entà ièu
+entà jo
+entà per'mor de
+entà per'mor que
+entà que
+entà qué
+entà ua auta
+enténer
+envèrs
+ençà
+eolian
+epic
+epistolar
+equivalent
+era fin dera annada
+erotic
+ertzian
+erós
+es a dire
+escaient
+escala
+escandalós
+escolar
+escriure
+escrupulós
+escríuer
+escàs
+esmovent
+espacial
+espaciau
+espanholista
+especial
+especialament
+especialment
+especialments
+especiaument
+especiauments
+especiuament
+especulatiu
+específicament
+esperar
+espinós
+espitalari
+espontanèu
+essencial
+essencialment
+est an passat
+est'an passat
+estadístic
+estamental
+estamentau
+estar
+estatal
+estendre
+estimar
+estrangièr
+estrangèr
+estranh
+estranhament
+estranhaments
+estranjament
+estranjaments
+estratègic
+estrictament
+estricte
+estructural
+estètic
+eth
+eth mèn
+eth nòste
+eth quau
+eth que
+eth qui
+eth sòn
+eth tòn
+eth vòste
+etic
+etimologic
+etnic
+etnogràfic
+etnològic
+europeu
+eventual
+eventualment
+evident
+evidentament
+evidentaments
+exactament
+exaustiu
+excel·lent
+excepcional
+exceptat
+excessivament
+excessivaments
+excitant
+exclusivament
+exigent
+existent
+exorbitat
+experimental
+experimentau
+explícitament
+expressament
+extensament
+exterior
+extraordinàriament
+extrèmament
+extrèmaments
+extèrn
+extèrne
+fa poc
+fa temps
+facil
+factible
+familhar
+familiar
+fanfarró
+fantastic
+far
+farmaceutic
+fart
+fascinant
+favorablament
+favorablaments
+favorable
+feble
+femenin
+fer
+feudal
+feudau
+fiable
+ficar
+fidelment
+filatèlic
+filial
+filiau
+filogenètic
+fin d'an
+fin final
+fin finala
+fin finau
+final
+finalament
+financièr
+financèr
+finaument
+finauments
+fins
+fins a
+fins ara
+fins que
+fisable
+fiscal
+fisic
+fisicament
+fisicaments
+fisician
+fisicoquímic
+fix
+flac
+floral
+florau
+fluorescent
+fluvial
+flux
+folcloric
+fonamental
+fonamentaument
+fonamentauments
+fondamentalament
+fongible
+forestal
+forma
+formal
+formalament
+formar
+formaument
+formauments
+formidable
+forçosament
+fosc
+fosforescent
+fotografic
+francament
+francaments
+francès
+franqueig
+fred
+freg
+frequent
+fresc
+frontal
+frontau
+frustrant
+full
+funcional
+fàcilment
+fèble
+fèrm
+fòra
+fòrt
+fòrtament
+fòrtaments
+fòrça
+gaire
+gaireben
+galant
+gascon
+gaèlic
+generalment
+genial
+geniau
+genital
+gens
+genèric
+geografic
+geologic
+ges
+global
+globalment
+golejador
+governamental
+governamentau
+gradual
+gramatical
+gran
+granitic
+granulós
+gras
+gratificant
+gratis
+gratuit
+gratuïtament
+gros
+gràcies
+gràcies per tot
+grèc
+grèu
+grèvament
+grèvaments
+guaire
+guanyador
+gòtic
+habitual
+habitualment
+harmònic
+hegemònic
+heired
+heràldic
+hidrològic
+hidràulic
+hipòcrita
+històricament
+hivernal
+homosexual
+honest
+honorífic
+hèr
+hòrt
+i
+i a longtemps
+ideal
+ideau
+idiomatic
+idonèu
+idrografic
+idèntic
+ieu
+igual
+igual que
+ilerdenc
+illimitat
+il·lustre
+imaginari
+immediatament
+imminent
+immobil
+immoral
+immorau
+imparable
+impensable
+imperfièch
+imperfièit
+imperfècte
+impertinent
+implicitament
+important
+impost
+impotent
+imprescindible
+imprevist
+improbable
+imprudent
+impunement
+inacabable
+inacceptable
+inadequat
+inadeqüat
+inadmissible
+inagotable
+inaugural
+incalculable
+incapaç
+incoherent
+incompatible
+incomplet
+incomprensible
+inconscient
+inconstitucional
+incorrècte
+incòmode
+indefinidament
+independent
+independentament
+independentaments
+indesbrembable
+indirectament
+indiscutiblament
+indiscutiblaments
+indispensable
+individual
+indivisible
+indobtable
+indocumentat
+industrial
+ineficaç
+inesperadament
+inesperadaments
+inestimable
+inevitablament
+inevitablaments
+inexistent
+inexorablament
+inexorablaments
+inexplicable
+inferior
+infidel
+informal
+informau
+informàtic
+ingovernable
+inicial
+inicialament
+iniciaument
+iniciauments
+inimaginable
+injustament
+innegable
+innocent
+innombrable
+inoperant
+inquiet
+inseparable
+inservible
+insignificant
+insistentament
+insistentaments
+insolit
+instantanèu
+instintiuament
+instintiuaments
+instintivament
+institucional
+instrumental
+instrumentau
+insuperable
+insuportable
+insurgent
+integral
+integralament
+integralaments
+integrista
+intel·lectual
+intemporal
+intencionat
+intensament
+interanual
+intercultural
+interculturau
+interdepartamental
+interessant
+interior
+interiorament
+interioraments
+intermediari
+interminable
+internacional
+intervocàlic
+intractable
+inutil
+invisible
+ironic
+irresponsable
+irreversible
+islamic
+istòric
+italian
+itinerant
+ièr
+ièr delà
+ièu
+ja non
+jacobin
+jamai
+jamès
+jaune
+joen
+jornalièr
+jornalièrament
+jornalièraments
+jos
+judicial
+juridicoinstitucional
+juridicoinstitucionau
+juridicolaboral
+juridicolaborau
+jurídic
+jurídicament
+jusca
+juscas
+justament
+justaments
+justificant
+juvenil
+kurd
+l'autre còp
+l'endeman
+la fin de l'annada
+la net d'abans
+la nuèch d'abans
+la serada
+laboral
+laboriós
+laguens
+laguens de
+lai
+lamentablament
+lamentablaments
+largament
+largaments
+lasciu
+lateral
+latifondista
+latin
+legal
+legalment
+lentament
+lentaments
+lestament
+lestaments
+leugièr
+leugèr
+levat que
+lexic
+lexical
+lexicau
+lheidatan
+liberal
+liberau
+licenciat
+lingüistic
+lingüístic
+lingüísticament
+literal
+literalament
+literalaments
+literau
+litoral
+litorau
+liurament
+liuraments
+liure
+llarg
+lleial
+lleuger
+lleugerament
+llevar
+lliure
+lo
+lo matin
+lo mieu
+lo nòstre
+lo que
+lo qui
+lo sieu
+lo tieu
+lo vòstre
+localament
+localaments
+logicament
+logicaments
+logistic
+londeman
+longtemps
+lonh
+lor
+lord
+los matins
+luenh
+luènh
+luònh
+lèu
+lèu tot
+lúcid
+lúdic
+madrilenc
+madur
+magistral
+magnetic
+magnífic
+mai
+mai lèu
+mai que mai
+majoritari
+majoritàriament
+mal
+malaisit
+malastrosament
+malastrosaments
+malaurat
+malaut
+malgrat
+malgrat aiçò
+malgrat de
+malgrat tot
+maligne
+manifèstament
+manifèstaments
+mantun
+manual
+manuau
+marginal
+marginau
+marinièr
+marinèr
+mas
+mas tanben
+masclista
+masculin
+mateix
+matemàtic
+material
+matern
+matinal
+matrimonial
+matrimoniau
+mau
+maugrat
+maugrat açò
+maugrat de
+maugrat tot
+maxim
+maximal
+me
+mecànic
+mediador
+mediterrani
+mei
+mejan
+mejançant
+melhor
+menar
+menor
+mens
+mensual
+mensuau
+mentretant
+mercé
+mercés
+mercés a
+mercés per tot
+mes
+mesa
+mesfisant
+metre
+metàl·lic
+mexicà
+miei
+miejanet
+mieu
+milanés
+milhor
+millenari
+millor
+minimament
+minimaments
+ministerial
+ministeriau
+miraclós
+miserable
+mitjà
+mixte
+mièlhs
+mobil
+moderadament
+moderadaments
+molt més enllà
+mon
+monetari
+monolitic
+mont
+montar
+moralment
+morfològic
+mortal
+mortau
+mos
+multilingüe
+multimèdia
+municipal
+municipalista
+museistic
+musulmà
+mutual
+mutuau
+màger
+mèdic
+mèn
+mèrci
+mès
+mès lèu
+mès que mès
+mès tanben
+mèsalèu
+mèslèu
+més enllà
+méter
+mòrt
+nacional
+nadiu
+natiu
+natural
+naturalment
+nau
+naut
+naut de tot
+nauèth
+nazi
+ne
+ne mai
+necessàriament
+necessàriaments
+neerlandés
+nefast
+negativament
+neoclàssic
+neuroquimic
+neutral
+ni
+ni mai
+no
+no auer
+no estar
+no préner
+nocturn
+nombre
+non
+non pas
+non solament
+non solaments
+nonmàs
+normalament
+normalment
+normativament
+normaument
+normauments
+nos
+nosati
+nosautres
+nostalgic
+notablament
+notablaments
+notable
+novament
+novèl
+nupcial
+nòble
+nòmada
+nòste
+nòstre
+nòu
+número
+o
+obrir
+obscè
+observaire
+obèrt
+obèrtament
+obèrtaments
+occitan
+occitano-català
+occitanocatalà
+oceànic
+ocupacional
+oficial
+oficialment
+olimpic
+on
+oncologic
+ongan
+onomàstic
+ont
+operatiu
+oportunament
+oportunaments
+oral
+oralment
+oriental
+orientau
+ornamental
+ornamentau
+orrible
+ortografic
+ossós
+otelièr
+otelèr
+ovin
+pacient
+palpable
+paradoxalament
+paradoxaument
+paradoxauments
+parallèlament
+parallèlaments
+parcialment
+parion
+parroquial
+parroquiau
+participar
+participatiu
+particolar
+particular
+particularment
+pas
+pas encara
+pas mai
+pas sovent
+pasmens
+pastoral
+pastorau
+pauc
+pauc a pauc
+pausadament
+païsatgistic
+peculiar
+pedagògic
+pel primièr còp
+pel que fa a
+pel que sembla
+pel segond còp
+pel tresen còp
+pendent
+penetrant
+penitenciari
+per
+per a
+per aquò
+per ara
+per açò
+per causa de
+per contra
+per encausa de
+per ieu
+per ièu
+per jo
+per lo dessús
+per mitjà de
+per part de
+per que
+per qué
+per tot
+per tot aiçò
+per tot açò
+per çò que tanh
+per'mor
+per'mor de
+per'mor que
+pera tarde
+perdent
+perfectament
+perfièch
+perfièit
+perfècte
+periferic
+periodicament
+periodicaments
+permanent
+permanentament
+permanentaments
+perque
+perqué
+persistent
+personal
+personalament
+personalaments
+pertanyent
+pertocant
+pertot
+període
+pes maitins
+peth dessús
+peth dusau còp
+peth dusau viatge
+peth maitin
+peth moment
+peth prumèr còp
+peth prumèr viatge
+peth tresau còp
+peth tresau viatge
+petrolièr
+pirenenc
+plaent
+plan
+plan d'ora
+plan de
+plan fòrça
+plantejar
+plenament
+plurinacional
+plurinacionau
+plus
+plàstic
+poetic
+polivalent
+polonés
+políticament
+popular
+popularament
+popularaments
+portar
+portatil
+portuguès
+posar
+positivaments
+possiblament
+possiblaments
+postal
+postau
+posterior
+posteriorament
+posterioraments
+potencialment
+pr'amor
+pr'amor que
+pr'aquò
+practic
+pragmatic
+precari
+precedent
+preciós
+predominant
+predominantament
+predominantaments
+preferentment
+pregon
+pregond
+prene
+pres
+presentar
+pressopostari
+pressumptament
+pressumptaments
+prestigiós
+presumptament
+preverbal
+preverbau
+previsiblament
+previsiblaments
+prigond
+prigondament
+prigondaments
+primerenc
+primièrament
+primordial
+primordiau
+principal
+principalment
+principau
+pro
+probablament
+probablaments
+probable
+problemàtic
+procedent
+processament
+professional
+professionau
+profitar
+profond
+progressivament
+prohond
+promocional
+promocionau
+prop
+proper
+properament
+propi
+propiament
+proporcionalment
+proppassat
+propèr
+proscrit
+proselitista
+prostituit
+prostituït
+provenir
+provençal
+providencial
+providenciau
+provier
+provinent
+prudent
+prumèrament
+prumèraments
+prèp
+près
+prèst
+prèviament
+préner
+pròxim
+psíquic
+publicament
+publicaments
+puish que
+puntual
+puntualment
+puntuau
+purament
+puraments
+pus
+puslèu
+puèi
+pòc
+pòga pòc
+pòlissa
+quadrat
+quadrúpede
+quaire
+qual
+qualqu'un
+qualquarren
+qualque
+quand
+quantitatiu
+quasi
+quate
+quatre
+quau
+quauqu'un
+quauquadegun
+quauquarren
+quauquarrés
+quauque
+quausevolh
+quaussevolh
+quaussevolha
+que ven
+qui que siá
+quicòm
+quilomètric
+quinsevolh
+quinsevolha
+quinsevolhe
+quinsevolhe causa
+quitament
+quitar
+quora
+qué
+qué que siá
+radiant
+radicalament
+radicaument
+radicauments
+radiofònic
+radiós
+ranci
+rapid
+rapidament
+rapidaments
+rarament
+raraments
+realista
+realment
+recentament
+recentaments
+reclús
+recomanacion
+recomandacion
+reconfortant
+recurrent
+reductor
+relativament
+relativaments
+remetre
+reméter
+ren
+repetidament
+repetidaments
+reproductor
+republican
+res
+residual
+residuau
+resistent
+respecte a
+responsable
+restant
+retirada
+retrògrad
+reversible
+revolucionari
+ribagorçan
+ric
+riserèl
+risolet
+risolièr
+ritualament
+rituaument
+rituauments
+rodamón
+roge
+roman
+rossèl
+ròi
+sa
+sagnant
+saharian
+sajar
+salvatge
+sanguini
+sasonièr
+sasoèr
+saudita
+sautaire
+sauvatge
+se
+se non
+se te platz
+se vos plai
+se vos platz
+sec
+sectari
+secular
+sedentari
+seductor
+segon aquò que
+segons
+segons aquerò que
+segons que
+segontes aquerò que
+seguent
+segur
+segurament
+seguraments
+següent
+selectivament
+selectivaments
+semblant
+sempre
+semàntic
+senon
+sens
+sens relambi
+sense relambi
+sensible
+sensual
+sentimental
+sentimentau
+senzilh
+separadament
+separadaments
+seriosament
+seriosaments
+servicial
+servir
+setmanal
+shut
+si
+si de non
+si que non
+sieu
+similar
+simpatizant
+simplament
+simplaments
+simple
+simplement
+simptomàtic
+simultàniament
+sincerament
+singular
+sintàtic
+siquenon
+sistematicament
+sistematicaments
+sistemàtic
+sobeiranista
+sobiran
+sobiranista
+social
+socialament
+sociaument
+sociauments
+sociocultural
+sociodemografic
+socioeconòmic
+sociolingüístic
+sociològic
+soent
+soent non
+sol
+solemnament
+solemne
+solet
+solidari
+solidàriament
+son
+sonca
+sonhat
+sonque
+sorisent
+sota
+sovent
+soís
+subalpí
+subcutani
+subergessent
+subitament
+subitaments
+subliminal
+subliminau
+sublingual
+submúltiple
+subnuclear
+suboceànic
+subpolar
+subretot
+subreuman
+subsaarian
+substancial
+substancialment
+substanciau
+subsònic
+subtil
+suburbà
+successivament
+successor
+suedés
+suenhat
+suficientment
+sufisent
+sulpic
+supausadament
+supausadaments
+superficial
+supramunicipal
+supramunicipau
+sur
+surrealista
+surtot
+sus
+susceptible
+sustot
+sustot non
+sustot pas
+sí
+sòn
+súper
+ta
+tab
+tal
+talment
+tamb
+tanben
+tangible
+tanlèu
+tanpauc
+tanpòc
+tant
+tauler
+taus
+te
+teatral
+teatrau
+tecnològic
+telemàtic
+telemàticament
+temerari
+temible
+temporal
+temporalament
+temporaument
+temporauments
+temporàriament
+temptar
+temàtic
+tendenciós
+tendència
+tenir
+teoric
+termal
+termierèr
+terminal
+terrenal
+terrible
+territorial
+testimonial
+textual
+texà
+teòricament
+tibetan
+tier
+tieu
+tipografic
+tirar
+ton
+topic
+tornamai
+tornarmai
+tortuós
+tostemp
+tostemps
+tot
+tot aquò
+tot açò
+tot e arren
+tot e mai
+tot e mès
+tot e res
+tot ennaut
+tot i que
+tot just
+tot lo mon
+tot lo mond
+tot lo monde
+tot seguit
+tot tipe de
+tota era gent
+tota mena de
+tota sòrta de
+total
+totalament
+totara
+totaument
+totauments
+totes amassa
+toti amassa
+totjorn
+totparier
+totun
+totòm
+trabalhista
+tradicional
+tradicionalment
+trampós
+transcendental
+transcendentau
+transhumant
+transnacional
+transpirinenc
+transversal
+trapezoidal
+trapezoidau
+tre
+tre ara
+treballador
+trencar
+trencat
+tres
+treure
+triangular
+trimestralment
+trobar
+troglodita
+troncal
+tròp
+txec
+tà
+tà ièu
+tà jo
+tà qué
+tà ua
+tàs cinc
+tàs dotze
+tàs dues
+tàs dètz
+tàs nau
+tàs onze
+tàs quate
+tàs sies
+tàs sèt
+tàs tres
+tàs ueit
+tècnicament
+tèrmic
+téner
+típic
+tòn
+tònic
+ucrainés
+ultimament
+ultimaments
+uman
+umanitari
+umil
+un autre còp
+un autre viatge
+un pialèr de
+un seguit de
+una mica
+una vegada més
+unanim
+unicament
+unicaments
+universal
+urban
+urbanizable
+urgent
+urós
+uèi
+uèi matin
+va
+vacant
+van
+vegetal
+venent
+venir
+verbal
+veritablament
+veritablaments
+veritable
+verrugós
+vertadièr
+vertadièrament
+vertadièraments
+vertadèr
+vertat es
+vertical
+vesedor
+vesin
+veteran
+veïcular
+veïnal
+viable
+vibrant
+vidant
+vier
+vigent
+vigila
+virar
+virtual
+virtuau
+virulent
+visceral
+visiblament
+visiblaments
+visual
+vital
+vivament
+vivaments
+vivent
+voluminós
+voluntàriament
+vora
+vos
+vosati
+vosautres
+vosté
+vulgar
+vés amb compte
+vòste
+vòstre
+xerraire
+àdhuc
+àgil
+ça que la
+ça que là
+çai
+çaquelà
+çò
+çò de mès
+çò ei
+çò es
+èca
+èsser
+èster
+íntegre
+ò
+òc
+òla
+òm
+òptim
+òrre
+últim
+únic

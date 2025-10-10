@@ -1,0 +1,91 @@
+Aufseher
+Ausführung
+Beherrscher
+Berg, Gebirge
+Daumenbreite
+Diener
+Ei
+Feuer, Gott des Feuers
+Frau
+Frauenhaus, Frauengemach
+Gast
+Gefallen, Gunst
+Gesundheit
+Heer
+Kapitel
+Kohle
+Luftraum
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Mondtag
+N. eines Sehers
+Nicht-Eile
+Nicht-Sehen
+Nichtessen, Fasten
+Nähe
+Ochse
+Ort
+Rezitation
+Schlussfolgerung
+Seele, Gewissen
+Seele, Herz
+Speise
+Started writing the header and entering some words by hand.
+Stein, Fels
+Todesstunde
+Unglück, Unheil, Schaden
+Verdruss im Herzen
+Vergangenheit
+Vogel
+Weg
+Würfel
+Ziege
+Zukunft
+abwärts
+anderer
+anderswohin
+anfangslos
+blind
+converting to presentational formats.
+dahinterkommen
+darauf, nun, und
+davon, deshalb
+die Zukunft betreffend
+die hohl zusammengelegten Hände
+ein Ende machend
+einer von mehreren
+eines Tages
+endlos
+erblinden
+essen, fressen
+gekennzeichnet
+größer, stärker, mehr als, ärger
+heute, jetzt
+hier, dort, dabei
+inmitten, dazwischen
+jetzt
+keine Kuh kennend
+keinen Anführer habend
+mehrere, viele
+nachgehend
+nicht wünschend
+oder, oder vielmehr, ja doch, wenn aber
+persönlicher Diener
+schuldlos
+schuldlos, fehlerlos
+sehr
+tadellos, fehlerlos
+unaufhörlich
+unbeweglich
+und ein anderes, ferner
+unermüdlich
+unerwartet, plötzlich
+unfähig
+ungesehen, ungeahnt
+unknown
+unsichtbar
+unvergänglich
+wandern
+wohl
+wunderbar
+Übermaß
+überaus, sehr, besonders
