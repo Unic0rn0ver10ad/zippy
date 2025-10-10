@@ -1,4 +1,7 @@
 # 🤖 Zippy 2.0 Is Here!
+
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 <img src="Zippy2.png" alt="Meet Zippy 2.0!" width="300">
 
 ## 🎯 Zippy 2.0 Has A Purpose!
@@ -37,6 +40,22 @@ Zippy was designed to be:
 ## 🕺💃🪩 Zippy is ready to RUMBA!
 
 Zippy is built on a new coding paradigm, RUMBA: Read, Understood, Maintained by Agents. If you've never heard about it before, it's because I invented / discovered it. RUMBA is the future!
+
+## 📦 Installation & Prerequisites
+
+Zippy 2.0 requires **Python 3.8 or higher** and uses only standard library modules - no external dependencies required!
+
+### Quick Start
+1. Clone this repository
+2. Ensure you have Python 3.8+ installed
+3. Place your dictionary files in the `dictionaries/` folder
+4. Run Zippy!
+
+```bash
+git clone https://github.com/your-username/zippy-review.git
+cd zippy-review/zippy
+python zippy.py
+```
 
 ## 🦾 How to Use Zippy 2.0!
 

@@ -1,0 +1,21 @@
+# Zippy 2.0 Dependencies
+# All dependencies are Python standard library (3.8+)
+# No external packages required
+
+# Standard library modules used:
+# - argparse (command line parsing)
+# - gzip (compression handling)
+# - os (file system operations)
+# - logging (output control)
+# - re (regular expressions)
+# - string (string manipulation)
+# - tarfile (archive handling)
+# - tempfile (temporary files)
+# - unicodedata (Unicode handling)
+# - xml.etree.ElementTree (XML parsing)
+# - pathlib (path operations)
+# - random (random number generation)
+# - time (timing functions)
+# - typing (type hints)
+# - collections (data structures)
+# - struct (binary data handling)
