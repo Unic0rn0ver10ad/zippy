@@ -36,6 +36,11 @@ Another idea is to not use dictionaries at all - instead, use the AI tools avail
 \n+Verbose modes (-v or -vv) also announce whether a dictionary contains POS tags so that
 agents know if the --pos filter will actually do anything.
 Use ``-pe`` to skip English wordlists when English appears in the dictionary.
+
+
+File: zippy.py
+Generated-by: ChatGPT-5, Codex, Replit Agent 3
+Reviewed and adjusted by: No one. Purely functional testing was done to verify correctness. No human code review or modification of any part of this file was undertaken at any time during its creation.
 """
 
 import argparse
